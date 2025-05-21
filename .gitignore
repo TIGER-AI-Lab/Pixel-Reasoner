@@ -50,7 +50,9 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 cover/
-
+1.jpg
+makevideo.py
+qa.json
 # Translations
 *.mo
 *.pot

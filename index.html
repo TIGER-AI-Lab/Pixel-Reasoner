@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 
 <body>
@@ -32,29 +34,30 @@
                         </h1>
                         <div class="is-size-5 publication-authors">
                             <span class="author-block">
-                                Alex Su,
+                                Alex Su<sup>♠</sup>,
                             </span>
                             <span class="author-block">
-                                <a href="https://haozheh3.github.io/" style="text-decoration: none; color: inherit;">Haozhe Wang</a>,
+                                <a href="https://haozheh3.github.io/" style="text-decoration: none; color: inherit;">Haozhe Wang</a><sup>♡</sup>,
                             </span>
                             <span class="author-block">
-                                Weiming Ren,
+                                Weiming Ren<sup>♥</sup>,
                             </span>
                             <span class="author-block">
-                                Fangzhen Lin,
+                                Fangzhen Lin<sup>♡</sup>,
                             </span>
                             <span class="author-block">
-                                <a href="https://wenhuchen.github.io/" style="text-decoration: none; color: inherit;">Wenhu Chen</a>,
+                                <a href="https://wenhuchen.github.io/" style="text-decoration: none; color: inherit;">Wenhu Chen</a><sup>♥</sup>,
                             </span>
                         </div>
 
                         <div class="is-size-5 publication-authors">
                             <span class="author-block">
-                                USTC, HKUST, University of Waterloo
+                                <sup>♠</sup>USTC, <sup>♡</sup>HKUST, <sup>♥</sup>University of Waterloo
                             </span>
                             <br>
                             <span class="author-block">Corresponding to:</span>
-                            <span class="author-block"><a href="mailto:yiming.jia@mail.utoronto.ca">jasper.whz@outlook.com</a>,</span>
+                            <span class="author-block"><a href="mailto:dlwlrma314516@gmail.com">dlwlrma314516@gmail.com</a>,</span>
+                            <span class="author-block"><a href="mailto:jasper.whz@outlook.com ">jasper.whz@outlook.com </a>,</span>
                             <span class="author-block"><a href="mailto:wenhuchen@uwaterloo.ca">wenhuchen@uwaterloo.ca</a></span>
                         </div>
 
@@ -134,7 +137,7 @@
               <h2 class="title is-3 has-text-centered">Overview</h2>
               <div class="content has-text-justified">
                 <p>Chain-of-thought reasoning has significantly improved the performance of Large Language Models (LLMs) across various domains. However, this reasoning process has been confined exclusively to textual space, limiting its effectiveness in visually intensive tasks. To address this limitation, we introduce the concept of reasoning in the pixel-space. Within this novel framework, Vision-Language Models (VLMs) are equipped with a suite of visual reasoning operations, such as zoom-in and select-frame. These operations enable VLMs to directly inspect, interrogate, and infer from visual evidences, thereby enhancing reasoning fidelity for visual tasks.
-Cultivating such pixel-space reasoning capabilities in VLMs presents notable challenges, including the model's initially imbalanced competence and its reluctance to adopt the newly introduced pixel-space operations. We address these challenges through a two-phase  training approach. The first phase employs instruction tuning on synthesized reasoning traces to familiarize the model with the novel visual operations. Following this, a reinforcement learning (RL) phase leverages a curiosity-driven reward scheme to balance exploration between pixel-space reasoning and textual reasoning. With these visual operations, VLMs can interact with complex visual inputs, such as information-rich images or videos to proactively gather necessary information. We demonstrate that this approach significantly improves VLM performance across diverse visual reasoning benchmarks. Our 7B model, \model, achieves 84\% on V* bench, 74\% on TallyQA-Complex, and 84\% on InfographicsVQA, marking the highest accuracy achieved by any open-source model to date. These results highlight the importance of pixel-space reasoning and the effectiveness of our framework.</p>
+Cultivating such pixel-space reasoning capabilities in VLMs presents notable challenges, including the model's initially imbalanced competence and its reluctance to adopt the newly introduced pixel-space operations. We address these challenges through a two-phase  training approach. The first phase employs instruction tuning on synthesized reasoning traces to familiarize the model with the novel visual operations. Following this, a reinforcement learning (RL) phase leverages a curiosity-driven reward scheme to balance exploration between pixel-space reasoning and textual reasoning. With these visual operations, VLMs can interact with complex visual inputs, such as information-rich images or videos to proactively gather necessary information. We demonstrate that this approach significantly improves VLM performance across diverse visual reasoning benchmarks. Our 7B model, Pixel-Reasoner, achieves 84% on V* bench, 74% on TallyQA-Complex, and 84% on InfographicsVQA, marking the highest accuracy achieved by any open-source model to date. These results highlight the importance of pixel-space reasoning and the effectiveness of our framework.</p>
                 
                 <div class="columns is-centered mt-4 mb-4">
                   <div class="column is-10">
@@ -145,12 +148,88 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
                   </div>
                 </div>
                 
-                <p>Our approach addresses a novel framework to incentivize the pixel-space reasoning skills in VLMs.</p>
+
               </div>
             </div>
           </div>
         </div>
       </section>
+      <section class="section">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column is-10">
+              <h2 class="title is-3 has-text-centered">How does it work?</h2>
+              <div class="content has-text-justified">
+
+                <p>We propose a two-phase training approach to cultivate pixel-space reasoning capabilities in VLMs. The first phase involves instruction tuning on synthesized reasoning traces to familiarize the model with the novel visual operations. Following this, a reinforcement learning (RL) phase leverages a curiosity-driven reward scheme to balance exploration between pixel-space reasoning and textual reasoning.</p>
+                
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-10">
+            <h2 class="title is-3 has-text-centered">Instruction Tuning</h2>
+            <div class="content has-text-justified">
+              <p>Instruction tuning is the first phase of our training approach, where the model is familiarized with novel visual operations through synthesized reasoning trajectories.As shown in the datapipe, we first collect high-resolution images with rich information and videos as seed data. Then we localize the reference visual cues (bboxes or frame indexes) through the original annotation of the source data or using gpt's bbox to the generated questions.
+                After that we employ a template-based synthesis approach. This template structures a pixel-space reasoning trajectory as a sequence: initial analysis of the entire visual input, followed by triggering specific visual operations to extract fine-grained details, subsequent analysis of these detailed visual cues, and ultimately arriving at the final answer. To synthesize a trajectory according to this template, we utilize the reference visual cue associated with each vision-language query. We first prompt GPT-4o to generate a textual description summarizing the entire visual input. Then, leveraging the reference visual cue, we prompt GPT-4o for a more detailed textual analysis focusing specifically on that cue. By composing these textual thinking segments and incorporating the visual operation targeting the reference visual cue, we obtain a single-pass reasoning trajectory that effectively interleaves textual reasoning with required visual operations.
+                To enhance model's ability to react to unexpected visual outcome, we manually design some error cases and insert inaccurate visual operations before introducing the correct visual operations to form self-correction trajectories.
+
+
+              </p>
+              <div class="columns is-centered mt-4 mb-4">
+                <div class="column is-10">
+                  <figure class="image">
+                      <img src="static/images/datapipe.png" alt="VisualWebInstruct Pipeline" style="width: 100%; height: 100%;">
+                    <figcaption class="has-text-centered">The Data synthesis pipeline</figcaption>
+                  </figure>
+                </div>
+              </div>
+            </div>
+            
+            
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column is-10">
+            <h2 class="title is-3 has-text-centered">Curiosity-Driven RL</h2>
+            <div class="content has-text-justified">
+              <p>
+                To overcome the learning trap where the model defaults to its stronger textual reasoning and neglects underdeveloped pixel-space reasoning, Pixel Reasoner introduces a curiosity-driven reward scheme. This scheme encourages active practice of visual operations by addressing two constraints: (1) the Rate of Pixel-space Reasoning (RaPR) should exceed a threshold H, and (2) the number of visual operations in a response should not exceed a bound N. These constraints are incorporated into training via Lagrangian relaxation, resulting in a modified reward function:
+                \[
+                r'(x, y) = r(x, y) + \alpha \cdot r_{\text{curiosity}}(x, y) + \beta \cdot r_{\text{penalty}}(y)
+                \]
+                where \( r_{\text{curiosity}} \) encourages exploration and \( r_{\text{penalty}} \) discourages overuse of visual operations. This reward formulation dynamically incentivizes the model to persist in learning pixel-space reasoning despite initial failure, leading to more robust visual understanding.
+              </p>
+              <div class="columns is-centered mt-4 mb-4">
+                <div class="column is-5">
+                  <figure class="image">
+                    <img src="static/images/curiosity_toolcall_compare.png" alt="PDF Image 1" style="width: 100%; height: auto;">
+                    <figcaption class="has-text-centered">RL Requires Incentives to Explore Pixel-space Reasoning. Without proper incentives, the policy learns to bypass the nascent pixel-space reasoning, resulting declining RaPR.</figcaption>
+                  </figure>
+                </div>
+                <div class="column is-5">
+                  <figure class="image">
+                    <img src="static/images/curiosity_penalty.png" alt="PDF Image 2" style="width: 100%; height: auto;">
+                    <figcaption class="has-text-centered">The Training Trend of our Curiosity-Driven Reward Scheme. We leverage curiosity bonus to encourages exploration and efficiency penalty to punish excessive visual operations.</figcaption>
+                  </figure>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
 	<!-- BibTeX citation -->
 	<section class="section" id="BibTeX">
@@ -158,11 +237,11 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
 	        <h2 class="title">Reference</h2>
 	        If you find our work useful, please give us a free cite:
 	        <pre><code>
-			@article{vl-rethinker,
-			      title={},
-			      author = {},
-			      journal={},
-			      year={2025}
+			@article{pixel-reasoner,
+			      title={Pixel Reasoner: Incentivizing Pixel-Space Reasoning with Curiosity-Driven Reinforcement Learning},
+			      author = {Alex Su and Haozhe Wang and Weiming Ren and Fangzhen Lin and Wenhu Chen},
+			      journal={arXiv preprint arXiv:XXXX.XXXXX},
+			      year={2024}
 			}
 	        </code></pre>
 	    </div>

@@ -16,13 +16,12 @@
 
 
 <span style="color:#183385; font-size: 14pt; font-family: Roboto, Helvetica, Arial, Heveltica Neue, sans-serif">
-     <b>Authors:</b>
-     <div class="name" target="_blank" href="">Alex Su*, 
-     <a class="name" target="_blank" href="https://HaozheH3.github.io">Haozhe Wang*<sup>&dagger;</sup></a>, 
+     <div class="name" target="_blank" href=""><b>Authors:</b> Alex Su<sup>*</sup>, 
+     <a class="name" target="_blank" href="https://HaozheH3.github.io">Haozhe Wang<sup>*</sup><sup>&dagger;</sup></a>, 
      <a class="name" target="_blank" href="https://cs.uwaterloo.ca/~w2ren/">Weiming Ren</a>, 
      <a class="name" target="_blank" href="https://cse.hkust.edu.hk/~flin/">Fangzhen Lin</a>,
      <a class="name" target="_blank" href="https://wenhuchen.github.io/">Wenhu Chen<sup>&Dagger;</sup></a></div>
-     <div>*Equal Contribution. 
+     <div><sup>*</sup>Equal Contribution. 
      <sup>&dagger;</sup>Project Lead. 
      <sup>&Dagger;</sup>Correspondence.</div>
      &nbsp; 

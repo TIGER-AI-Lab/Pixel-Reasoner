@@ -1,0 +1,25 @@
+accelerate
+bitsandbytes
+datasets
+deepspeed==0.15
+einops
+flask
+isort
+jsonlines
+loralib
+math-verify
+levenshtein
+optimum
+packaging
+peft
+pynvml>=12.0.0
+qwen_vl_utils
+ray[default]==2.42.0
+tensorboard
+torch
+torchmetrics
+tqdm
+transformers @ git+https://github.com/huggingface/transformers@main
+transformers_stream_generator
+wandb
+wheel

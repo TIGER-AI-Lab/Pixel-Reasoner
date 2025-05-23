@@ -118,6 +118,7 @@
           <div class="columns is-centered has-text-centered">
             <div class="column is-four-fifths">
               <h2 class="title is-3">🔔News</h2>
+              <p>We released models on huggingface. We are actively working on data and code release.</p>
             </div>
           </div>
           <!--/ Abstract. -->
@@ -136,16 +137,17 @@
         <div class="container is-max-desktop">
           <div class="columns is-centered">
             <div class="column is-10">
-              <h2 class="title is-3 has-text-centered">Overview</h2>
+              <h2 class="title is-3 has-text-centered">Motivation</h2>
               <div class="content has-text-justified">
-                <p>Chain-of-thought reasoning has significantly improved the performance of Large Language Models (LLMs) across various domains. However, this reasoning process has been confined exclusively to textual space, limiting its effectiveness in visually intensive tasks. To address this limitation, we introduce the concept of reasoning in the pixel-space. Within this novel framework, Vision-Language Models (VLMs) are equipped with a suite of visual reasoning operations, such as zoom-in and select-frame. These operations enable VLMs to directly inspect, interrogate, and infer from visual evidences, thereby enhancing reasoning fidelity for visual tasks.
-Cultivating such pixel-space reasoning capabilities in VLMs presents notable challenges, including the model's initially imbalanced competence and its reluctance to adopt the newly introduced pixel-space operations. We address these challenges through a two-phase  training approach. The first phase employs instruction tuning on synthesized reasoning traces to familiarize the model with the novel visual operations. Following this, a reinforcement learning (RL) phase leverages a curiosity-driven reward scheme to balance exploration between pixel-space reasoning and textual reasoning. With these visual operations, VLMs can interact with complex visual inputs, such as information-rich images or videos to proactively gather necessary information. We demonstrate that this approach significantly improves VLM performance across diverse visual reasoning benchmarks. Our 7B model, Pixel-Reasoner, achieves 84% on V* bench, 74% on TallyQA-Complex, and 84% on InfographicsVQA, marking the highest accuracy achieved by any open-source model to date. These results highlight the importance of pixel-space reasoning and the effectiveness of our framework.</p>
-                
+                <p>Chain-of-thought reasoning has significantly improved the performance of Large Language Models (LLMs) across various domains. This reasoning paradigm is also employed by state-of-the-art VLMs, which involves processing multimodal queries to extract relevant cues, and perform reasoning purely in the textual format. 
+                  Despite their success, the prevailing textual reasoning paradigm faces an inherent limitation: relying solely on text tokens to express intermediate reasoning steps can constrain the depth and accuracy achievable by Vision-Language Models (VLMs) on visually intensive tasks. The lack of direct interaction with visual inputs—such as drawing lines/marks, highlighting regions, or zooming in—hinders the model’s ability to interact with the information-rich images. As a result, VLMs often struggle to capture fine-grained visual details, including tiny objects, subtle spatial relationships, small embedded text, and nuanced actions in videos.
+                These limitations lead us to a question:
+                <p><b>Can VLMs perform reasoning steps more directly within the visual modality itself, leveraging computational visual manipulations as actions to guide reasoning?</b></p>
                 <div class="columns is-centered mt-4 mb-4">
                   <div class="column is-10">
                     <figure class="image">
                         <img src="static/images/teaser.jpg" alt="VisualWebInstruct Pipeline">
-                      <figcaption class="has-text-centered">The Pixel-Reasoner Framework</figcaption>
+                      <figcaption class="has-text-centered">Illustration of Pixel-Space Reasoning</figcaption>
                     </figure>
                   </div>
                 </div>

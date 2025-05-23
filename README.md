@@ -6,12 +6,13 @@
 <img style="height:22pt" src="https://img.shields.io/badge/-Code-green?style=flat&logo=github"></a>
 <a target="_blank" href="https://tiger-ai-lab.github.io/Pixel-Reasoner/">
 <img style="height:22pt" src="https://img.shields.io/badge/-🌐%20Website-blue?style=flat"></a>
-<a target="_blank" href="">
+<a target="_blank" href="https://tiger-ai-lab.github.io/Pixel-Reasoner/">
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Models-red?style=flat"></a>
-<a target="_blank" href="">
+<a target="_blank" href="https://huggingface.co/TIGER-Lab/PixelReasoner-RL-v1">
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Dataset-blue?style=flat"></a>
-<a target="_blank" href="">
+<a target="_blank" href="https://huggingface.co/TIGER-Lab/PixelReasoner-RL-Data">
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Demo-yellow?style=flat"></a>
+<a target="_blank" href="https://huggingface.co/spaces/TIGER-Lab/Pixel-Reasoner">
 <br>
 
 
@@ -29,7 +30,7 @@
 
 ## 🔥News
 
-- [2025/5/22] We will release data, models, code soon.
+- [2025/5/22] We released models-v1. Now actively working on data and code release.
 
 
 ## Overview
@@ -44,7 +45,7 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
 
 
 ## Release Progress
-- [ ] models.
+- [x] models.
 - [ ] data.
 - [ ] inference and evaluation code.
 - [ ] instruction-tuning code.
@@ -52,14 +53,16 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
 
 
 ### Dataset
+We will release the datasets on the huggingface at [TIGER-Lab/PixelReasoner-RL-Data](https://huggingface.co/datasets/TIGER-Lab/PixelReasoner-RL-Data) and [TIGER-Lab/PixelReasoner-SFT-Data](https://huggingface.co/datasets/TIGER-Lab/PixelReasoner-SFT-Data)
 
 ### Models
-
+Please check the [TIGER-Lab/PixelReasoner-RL-v1](https://huggingface.co/TIGER-Lab/PixelReasoner-RL-v1) and [TIGER-Lab/PixelReasoner-WarmStart](https://huggingface.co/TIGER-Lab/PixelReasoner-WarmStart)
 
 ## 🚀Quick Start
-We proposed two-staged post-training. The instruction tuning is adapted from Open-R1. The Curiosity-Driven RL is adapted from VL-Rethinker
+We proposed two-staged post-training. The instruction tuning is adapted from Open-R1. The Curiosity-Driven RL is adapted from VL-Rethinker.
 
 ### Running Instruction Tuning 
+We will update this part soon.
 
 ### Running Curiosity-Driven RL
 Under `curiosity_driven_rl` folder, check out [the installation instructions](curiosity_driven_rl/installation.md).
@@ -71,6 +74,18 @@ bash ./scripts/train_vlm_multi.sh
 ```
 
 ### Inference and Evaluation
+Under 
+Run the following.
+```
+cd curiosity_driven_rl
+export testdata=/path/to/parquet
+export num_vllm=8
+export num_gpus=8
+export tagname=trials
+export policy=/path/to/model
+
+bash scripts/eval_vlm_new.sh
+```
 
 
 

@@ -6,11 +6,11 @@
 <img style="height:22pt" src="https://img.shields.io/badge/-Code-green?style=flat&logo=github"></a>
 <a target="_blank" href="https://tiger-ai-lab.github.io/Pixel-Reasoner/">
 <img style="height:22pt" src="https://img.shields.io/badge/-🌐%20Website-blue?style=flat"></a>
-<a target="_blank" href="">
+<a target="_blank" href="https://huggingface.co/TIGER-Lab/PixelReasoner-RL-v1">
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Models-red?style=flat"></a>
-<a target="_blank" href="">
+<a target="_blank" href="https://huggingface.co/collections/TIGER-Lab/pixel-reasoner-682fe96ea946d10dda60d24e">
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Dataset-blue?style=flat"></a>
-<a target="_blank" href="">
+<a target="_blank" href="https://huggingface.co/spaces/TIGER-Lab/Pixel-Reasoner">
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Demo-yellow?style=flat"></a>
 <br>
 

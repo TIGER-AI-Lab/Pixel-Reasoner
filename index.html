@@ -77,7 +77,7 @@
                                 </span>
 
                                 <span class="link-block">
-                                    <a href="#" target="_blank"
+                                    <a href="https://arxiv.org/abs/2505.15966" target="_blank"
                                     class="external-link button is-normal is-rounded is-dark">
                                     <span class="icon">
                                         <i class="ai ai-arxiv"></i>
@@ -87,7 +87,7 @@
                                 </span>
 
                                 <span class="link-block">
-                                  <a href="#" target="_blank"
+                                  <a href="https://huggingface.co/TIGER-Lab/PixelReasoner-RL-v1" target="_blank"
                                   class="external-link button is-normal is-rounded is-dark">
                                       <span class="icon">
                                         🤗
@@ -96,12 +96,12 @@
                                   </a>
                                 </span>
                                 <span class="link-block">
-                                  <a href="#" target="_blank"
+                                  <a href="https://huggingface.co/collections/TIGER-Lab/pixel-reasoner-682fe96ea946d10dda60d24e" target="_blank"
                                   class="external-link button is-normal is-rounded is-dark">
                                       <span class="icon">
                                         🤗
                                       </span>
-                                      <span>Dataset</span>
+                                      <span>Datasets</span>
                                   </a>
                                 </span>
                             </div>
@@ -133,6 +133,7 @@
           <div class="columns is-centered has-text-centered">
             <div class="column is-four-fifths">
               <h2 class="title is-3">🔔News</h2>
+              <p>We released models on huggingface. We are actively working on data and code release.</p>
             </div>
           </div>
           <!--/ Abstract. -->
@@ -151,16 +152,48 @@
         <div class="container is-max-desktop">
           <div class="columns is-centered">
             <div class="column is-10">
-              <h2 class="title is-3 has-text-centered">Overview</h2>
-              <div class="content has-text-justified">
-                <p>Chain-of-thought reasoning has significantly improved the performance of Large Language Models (LLMs) across various domains. However, this reasoning process has been confined exclusively to textual space, limiting its effectiveness in visually intensive tasks. To address this limitation, we introduce the concept of reasoning in the pixel-space. Within this novel framework, Vision-Language Models (VLMs) are equipped with a suite of visual reasoning operations, such as zoom-in and select-frame. These operations enable VLMs to directly inspect, interrogate, and infer from visual evidences, thereby enhancing reasoning fidelity for visual tasks.
-Cultivating such pixel-space reasoning capabilities in VLMs presents notable challenges, including the model's initially imbalanced competence and its reluctance to adopt the newly introduced pixel-space operations. We address these challenges through a two-phase  training approach. The first phase employs instruction tuning on synthesized reasoning traces to familiarize the model with the novel visual operations. Following this, a reinforcement learning (RL) phase leverages a curiosity-driven reward scheme to balance exploration between pixel-space reasoning and textual reasoning. With these visual operations, VLMs can interact with complex visual inputs, such as information-rich images or videos to proactively gather necessary information. We demonstrate that this approach significantly improves VLM performance across diverse visual reasoning benchmarks. Our 7B model, Pixel-Reasoner, achieves 84% on V* bench, 74% on TallyQA-Complex, and 84% on InfographicsVQA, marking the highest accuracy achieved by any open-source model to date. These results highlight the importance of pixel-space reasoning and the effectiveness of our framework.</p>
-                
+              <h2 class="title is-3 has-text-centered">Motivation</h2>
+              <div class="content has-text-justified", >
+                <p>Chain-of-thought reasoning has significantly improved the performance of Large Language Models (LLMs) across various domains. This reasoning paradigm is also employed by state-of-the-art VLMs, which first extracts relevant cues from mutlimodal inputs, and then perform reasoning purely in the textual format. 
+                  Despite their success, this prevailing textual reasoning paradigm faces an inherent limitation: 
+                  the lack of direct interaction with visual inputs -- such as drawing lines/marks, highlighting regions, or zooming in -- hinders the model’s ability to capture fine-grained visual details, including tiny objects, subtle spatial relationships, small embedded text, and nuanced actions in videos.
+                These limitations lead us to pose a question:
+                <p><b>Can VLMs perform reasoning steps more directly within the visual modality itself, leveraging computational visual manipulations as actions to guide reasoning?</b></p>
+                <p>We introduce the concept of <b>pixel-space reasoning</b>, 
+                  a novel paradigm where reasoning is not exclusively confined to verbalized format but actively incorporates operations applied directly to the visual inputs. 
+                  These visual operations serve as integral steps within its reasoning chain, empowering the model to inspect, interrogate, and infer from visual evidence with enhanced fidelity. </p>
                 <div class="columns is-centered mt-4 mb-4">
                   <div class="column is-10">
                     <figure class="image">
-                        <img src="static/images/teaser.jpg" alt="VisualWebInstruct Pipeline">
-                      <figcaption class="has-text-centered">The Pixel-Reasoner Framework</figcaption>
+                        <img src="static/images/teaser.png" alt="Pixel-Space Reasoning">
+                      <figcaption class="has-text-centered">Illustration of Pixel-Space Reasoning</figcaption>
+                    </figure>
+                  </div>
+                </div>
+                
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container is-max-desktop">
+          <div class="columns is-centered">
+            <div class="column is-10">
+              <h2 class="title is-3 has-text-centered">The Learning Trap of Cultivating Pixel-Space Reasoning</h2>
+              <div class="content has-text-justified" >
+                <p>However, we identified a critical <b>learning trap</b> problem when cultivating this novel pixel-space reasoning capability. 
+                  Existing VLMs typically suffers from a disparity in its capabilities: proficient textual reasoning versus nascent (zero-shot) pixel-space reasoning. This inherent imbalance creates a "learning trap" that impedes the development of pixel-space reasoning, stemming from two synergistic issues. 
+                  Firstly, the model's initial limited mastery over visual operations frequently leads to failure or incorrect outputs, resulting in a higher incidence of negative feedback compared to text-mediated reasoning. 
+                  Secondly, insufficient intrinsic motivations allows the model to purse the extrinsic correctness reward by simply ignoring the outcomes of visual operations or default to its stronger textual reasoning. 
+                  This interplay fosters a detrimental cycle where initial failures discourage further attempts, leading to the premature abandonment of exploring and mastering visual operations. </p>
+                <div class="columns is-centered mt-4 mb-4">
+                  <div class="column is-10">
+                    <figure class="image">
+                        <img src="static/images/learningtrap.png" alt="The Learning Trap Problem", style="width: 500px; height: auto;">
+                      <figcaption class="has-text-centered">Illustration of the Learning Trap Problem</figcaption>
                     </figure>
                   </div>
                 </div>
@@ -202,7 +235,7 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
               <div class="columns is-centered mt-4 mb-4">
                 <div class="column is-10">
                   <figure class="image">
-                      <img src="static/images/datapipe.png" alt="VisualWebInstruct Pipeline" style="width: 100%; height: 100%;">
+                      <img src="static/images/datapipeline.png" alt="VisualWebInstruct Pipeline" style="width: 100%; height: 100%;">
                     <figcaption class="has-text-centered">The Data synthesis pipeline</figcaption>
                   </figure>
                 </div>
@@ -257,7 +290,7 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
 			@article{pixel-reasoner,
 			      title={Pixel Reasoner: Incentivizing Pixel-Space Reasoning with Curiosity-Driven Reinforcement Learning},
 			      author = {Alex Su and Haozhe Wang and Weiming Ren and Fangzhen Lin and Wenhu Chen},
-			      journal={arXiv preprint arXiv:XXXX.XXXXX},
+			      journal={arXiv preprint arXiv:2505.15966},
 			      year={2024}
 			}
 	        </code></pre>

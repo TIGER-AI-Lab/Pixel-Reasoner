@@ -1,2 +1,2 @@
-# MM-Rethinker
-The official code of "MM-Rethinker: Advancing State-of-the-Art in Multimodal Reasoning with RL and Rethinking"
+# Pixel Reasoner
+The official code of "Pixel Reasoner: Incentivizing Pixel-Space Reasoning with Curiosity-Driven Reinforcement Learning"

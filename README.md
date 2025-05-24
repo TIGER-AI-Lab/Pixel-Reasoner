@@ -29,7 +29,7 @@
      
 
 ## 🔥News
-
+- [2025/5/25] We made really fun demos! You can now play with the [**online demo**](https://huggingface.co/spaces/TIGER-Lab/Pixel-Reasoner). Have fun!
 - [2025/5/22] We released models-v1. Now actively working on data and code release.
 
 

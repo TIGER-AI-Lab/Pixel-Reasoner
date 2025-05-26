@@ -12,7 +12,8 @@
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Dataset-blue?style=flat"></a>
 <a target="_blank" href="https://huggingface.co/TIGER-Lab/PixelReasoner-RL-Data">
 <img style="height:22pt" src="https://img.shields.io/badge/-🤗%20Demo-yellow?style=flat"></a>
-<a target="_blank" href="https://huggingface.co/spaces/TIGER-Lab/Pixel-Reasoner">
+<a target="_blank" href="https://huggingface.co/spaces/TIGER-Lab/Pixel-Reasoner"></a>
+
 <br>
 <span>
 <b>Authors:</b> Alex Su<sup>*</sup>,

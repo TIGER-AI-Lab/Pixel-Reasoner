@@ -19,7 +19,7 @@
 
 <br>
 <span>
-<b>Authors:</b> Alex Su<sup>*</sup>,
+<b>Authors:</b> Alex Su<sup>*</sup>
 <a class="name" target="_blank" href="https://HaozheH3.github.io">Haozhe Wang<sup>*</sup><sup>&dagger;</sup></a>, 
 <a class="name" target="_blank" href="https://cs.uwaterloo.ca/~w2ren/">Weiming Ren</a>, 
 <a class="name" target="_blank" href="https://cse.hkust.edu.hk/~flin/">Fangzhen Lin</a>,
@@ -52,7 +52,7 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
 - [x] models.
 - [ ] data.
 - [ ] inference and evaluation code.
-- [ ] instruction-tuning code.
+- [x] instruction-tuning code.
 - [x] RL code. 
 
 
@@ -65,8 +65,21 @@ Please check the [TIGER-Lab/PixelReasoner-RL-v1](https://huggingface.co/TIGER-La
 ## 🚀Quick Start
 We proposed two-staged post-training. The instruction tuning is adapted from Open-R1. The Curiosity-Driven RL is adapted from VL-Rethinker.
 
-### Running Instruction Tuning 
-We will update this part soon.
+## Running Instruction Tuning
+
+Follow these steps to start the instruction tuning process:
+
+1. **Installation**
+   - Navigate to the `instruction_tuning` folder
+   - Follow the detailed setup guide in [installation instructions](instruction_tuning/install/install.md)
+
+2. **Configuration**
+   -configure model and data path in sft.sh
+
+3. **Launch Training**
+   ```bash
+   bash sft.sh
+   ```
 
 ### Running Curiosity-Driven RL
 Under `curiosity_driven_rl` folder, check out [the installation instructions](curiosity_driven_rl/installation.md).

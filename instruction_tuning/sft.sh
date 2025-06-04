@@ -17,8 +17,8 @@ python -m torch.distributed.run --nproc_per_node="8" \
     instruction_tuning/sft_tool.py \
     --deepspeed instruction_tuning/local_scripts/zero2.json \
     --output_dir output/$RUN_NAME \
-    --model_name_or_path /home/ma-user/work/haozhe/muze/models/Qwen2.5-VL-7B-Instruct \
-    --datasetpath /home/ma-user/work/haozhe/muze/all_IV_noweb_15video_processed.json \
+    --model_name_or_path  \
+    --datasetpath  \
     --lr_scheduler_type cosine \
     --warmup_ratio 0.1 \
     --eval_strategy no \

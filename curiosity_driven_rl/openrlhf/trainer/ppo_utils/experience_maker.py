@@ -2428,22 +2428,22 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                     this_r = 0.0 
                 # incentivize select_frames 
                 # curiosity: if rapr==0.5, fair
-                curiosity = 0.0 
-                penalty = 0.0
-                # if isvideo and ncall>0.1: # for video
-                #     curiosity = max(0.3 - rapr, 0.0) / 1.5
-                #     curiosity = curiosity / rapr * 0.25 # the maximum curiosity is 0.25
-                #     penalty = - 0.05*(ncall-1)
-                #     # bonus = max(0.0, discount*(curiosity + penalty)) # curiosity; failure penalty
-                #     bonus = discount*(curiosity + penalty)
-                #     this_r += bonus 
-                # elif ncall>0.1: # for image only when it's correct?
-                #     curiosity = max(0.3 - rapr, 0.0) / 2.0
-                #     curiosity = curiosity / rapr * 0.25 # the maximum curiosity is 0.25
-                #     penalty = - 0.05*(ncall-1)
-                #     # bonus = max(0.0, discount*(curiosity + penalty))
-                #     bonus = discount*(curiosity + penalty)
-                #     this_r += bonus
+                # curiosity = 0.0 
+                # penalty = 0.0
+                if isvideo and ncall>0.1: # for video
+                    curiosity = max(0.3 - rapr, 0.0) / 1.5
+                    curiosity = curiosity / rapr * 0.25 # the maximum curiosity is 0.25
+                    penalty = - 0.05*(ncall-1)
+                    # bonus = max(0.0, discount*(curiosity + penalty)) # curiosity; failure penalty
+                    bonus = discount*(curiosity + penalty)
+                    this_r += bonus 
+                elif ncall>0.1: # for image only when it's correct?
+                    curiosity = max(0.3 - rapr, 0.0) / 2.0
+                    curiosity = curiosity / rapr * 0.25 # the maximum curiosity is 0.25
+                    penalty = - 0.05*(ncall-1)
+                    # bonus = max(0.0, discount*(curiosity + penalty))
+                    bonus = discount*(curiosity + penalty)
+                    this_r += bonus
                 #################
                 # if has_correct_without_tool: # then we can encourage correct tool
                 #     if mres>0.5 and ncall>0.1: # discourage unnecessary tool

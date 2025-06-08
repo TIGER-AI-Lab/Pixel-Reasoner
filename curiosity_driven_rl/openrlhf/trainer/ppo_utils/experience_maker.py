@@ -14,7 +14,6 @@ from datasets import interleave_datasets, load_dataset
 from openrlhf.models.actor import Actor
 from openrlhf.models.utils import compute_approx_kl, compute_reward, masked_mean, unpacking_samples
 from openrlhf.utils.logging_utils import init_logger
-from openrlhf.utils.remote_rm_utils import remote_rm_fn, remote_rm_fn_ray
 # from openrlhf.trainer.ppo_utils.data_processor import add_pixel_bounds
 from qwen_vl_utils import smart_resize, process_vision_info, extract_vision_info, fetch_image
 
@@ -71,55 +70,55 @@ Select frames from a video.
     def call(self, images, target_frames):
         return [images[tgt] for tgt in target_frames]
     
-@register_tool("crop_image")
-class CropImage(BaseTool):
-    @property
-    def description(self):
-        return """
-Zoom in on the image based on the bounding box coordinates. 
-""".strip()
+# @register_tool("crop_image")
+# class CropImage(BaseTool):
+#     @property
+#     def description(self):
+#         return """
+# Zoom in on the image based on the bounding box coordinates. 
+# """.strip()
 
-    parameters = {
-        "type": "object",
-        "properties": {
-            "bbox_2d": {
-                "type": "array",
-                "description": "coordinates for bounding box of the area you want to zoom in. minimum value is 0 and maximum value is the width/height of the image.",
-                "items": {
-                    "type": "number",
-                }
-            },
-            "target_image":{
-                "type": "number",
-                "description": "The index of the image to crop. Index from 1 to the number of images. Choose 1 to operate on original image."
-            }
-        },
-        "required": ["bbox_2d", "target_image"]
-    }
+#     parameters = {
+#         "type": "object",
+#         "properties": {
+#             "bbox_2d": {
+#                 "type": "array",
+#                 "description": "normalized coordinates for bounding box of the region you want to zoom in. Values should be within [0.0,1.0].",
+#                 "items": {
+#                     "type": "number",
+#                 }
+#             },
+#             "target_image":{
+#                 "type": "number",
+#                 "description": "The index of the image to crop. Index from 1 to the number of images. Choose 1 to operate on original image."
+#             }
+#         },
+#         "required": ["bbox_2d", "target_image"]
+#     }
 
-    def call(self, image, bbox_2d,padding=(0.1,0.1)):
-        """
-        Crop the image based on the bounding box coordinates.
-        """
-        img_x, img_y = image.size
-        padding_tr = (600.0/img_x,600.0/img_y)
-        padding = (min(padding[0],padding_tr[0]),min(padding[1],padding_tr[1]))
+#     def call(self, image, bbox_2d,padding=(0.1,0.1)):
+#         """
+#         Crop the image based on the bounding box coordinates.
+#         """
+#         img_x, img_y = image.size
+#         padding_tr = (600.0/img_x,600.0/img_y)
+#         padding = (min(padding[0],padding_tr[0]),min(padding[1],padding_tr[1]))
 
-        if bbox_2d[0] < 1 and bbox_2d[1] < 1 and bbox_2d[2] < 1 and bbox_2d[3] < 1:
-            normalized_bbox_2d = (float(bbox_2d[0])-padding[0], float(bbox_2d[1])-padding[1], float(bbox_2d[2])+padding[0], float(bbox_2d[3])+padding[1])
-        else:
-            normalized_bbox_2d = (float(bbox_2d[0])/img_x-padding[0], float(bbox_2d[1])/img_y-padding[1], float(bbox_2d[2])/img_x+padding[0], float(bbox_2d[3])/img_y+padding[1])
-        normalized_x1, normalized_y1, normalized_x2, normalized_y2 = normalized_bbox_2d
-        normalized_x1 =min(max(0, normalized_x1), 1)
-        normalized_y1 =min(max(0, normalized_y1), 1)
-        normalized_x2 =min(max(0, normalized_x2), 1)
-        normalized_y2 =min(max(0, normalized_y2), 1)
-        cropped_img = image.crop((int(normalized_x1*img_x), int(normalized_y1*img_y), int(normalized_x2*img_x), int(normalized_y2*img_y)))
-        w, h = cropped_img.size
-        assert w > 28 and h > 28, f"Cropped image is too small: {w}x{h}"
+#         if bbox_2d[0] < 1 and bbox_2d[1] < 1 and bbox_2d[2] < 1 and bbox_2d[3] < 1:
+#             normalized_bbox_2d = (float(bbox_2d[0])-padding[0], float(bbox_2d[1])-padding[1], float(bbox_2d[2])+padding[0], float(bbox_2d[3])+padding[1])
+#         else:
+#             normalized_bbox_2d = (float(bbox_2d[0])/img_x-padding[0], float(bbox_2d[1])/img_y-padding[1], float(bbox_2d[2])/img_x+padding[0], float(bbox_2d[3])/img_y+padding[1])
+#         normalized_x1, normalized_y1, normalized_x2, normalized_y2 = normalized_bbox_2d
+#         normalized_x1 =min(max(0, normalized_x1), 1)
+#         normalized_y1 =min(max(0, normalized_y1), 1)
+#         normalized_x2 =min(max(0, normalized_x2), 1)
+#         normalized_y2 =min(max(0, normalized_y2), 1)
+#         cropped_img = image.crop((int(normalized_x1*img_x), int(normalized_y1*img_y), int(normalized_x2*img_x), int(normalized_y2*img_y)))
+#         w, h = cropped_img.size
+#         assert w > 28 and h > 28, f"Cropped image is too small: {w}x{h}"
 
 
-        return cropped_img  
+#         return cropped_img  
 
 @register_tool("crop_image_normalized")
 class CropImageNormalized(BaseTool):
@@ -134,7 +133,7 @@ Zoom in on the image based on the bounding box coordinates. It is useful when th
         "properties": {
             "bbox_2d": {
                 "type": "array",
-                "description": "coordinates for bounding box of the area you want to zoom in. minimum value is 0 and maximum value is 1.",
+                "description": "coordinates for bounding box of the area you want to zoom in. Values should be within [0.0,1.0].",
                 "items": {
                     "type": "number",
                 }
@@ -1147,7 +1146,7 @@ def parse_last_tool(output_text):
     return json.loads(output_text.split(tool_start)[-1].split(tool_end)[0])
 
 
-def crop_image(image, bbox_2d,  padding=0.1):
+def crop_image_normalized(image, bbox_2d,  padding=0.1):
     """
     Crop the image based on the bounding box coordinates.
     """
@@ -1223,7 +1222,7 @@ def execute_tool(images, rawimages, args, toolname, is_video, function=None):
             else:
                 tmp = images[index]
             image_to_crop = tmp
-        if function is None: function = crop_image 
+        if function is None: function = crop_image_normalized
         cropped_image = function(image_to_crop, args['bbox_2d'])
     return cropped_image
 
@@ -1259,7 +1258,9 @@ def get_prompt_from_messages(oldformat_messages, prompt_maker, tools, processor)
         ) for msg in messages]
 
     messages = [[x.model_dump() for x in conversations] for conversations in messages]
+    
     prompts = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+    
     return prompts, messages
     
     
@@ -1434,10 +1435,10 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
         ###### old version
         # self.tools = [CropImageNormalized().function]
         ####### new version
-        self.operations = dict(crop_image=CropImage(), select_frames=SelectFrames())
+        self.operations = dict(crop_image_normalized=CropImageNormalized(), select_frames=SelectFrames())
         notool = getattr(self.strategy.args, "system_prompt", "none")=="notool"
         
-        self.tools = [] if notool else [self.operations[k].function for k in ['crop_image', 'select_frames']]
+        self.tools = [] if notool else [self.operations[k].function for k in ['crop_image_normalized', 'select_frames']]
         print(f"!!!! [check] prompt notool={notool}")
         self.prompt_maker = NousFnCallPrompt()
 
@@ -1875,8 +1876,10 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                         for k in ['solutions', 'gts', 'round0_correctness', 'round1_correctness','validity', 'reward', 'round1_nwait', 'round0_nwait',  'qids', 'questions', 'num_actions','curiosity','penalty']: # error_info, usefmt, use_codes
                             # if k=='sol': continue 
                             if k not in dump_info: continue 
+                            
                             if len(dump_info[k])!=num:
                                 raise Exception(f"dump-info key {k}: {len(dump_info[k])} should be {num}")
+                            
                             v = dump_info[k][i]
                             
                             entry[k] = v
@@ -1945,7 +1948,7 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
         zoom_maxsize = 1000
         select_maxsize = 400
         eval_minpixel = 256 
-        eval_maxpixel = 1024 # for tools, should be 8000
+        eval_maxpixel = 8000 # for tools, should be 8000
         
         rank = torch.distributed.get_rank()
         world_size = torch.distributed.get_world_size()
@@ -2268,7 +2271,6 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                         if not isinstance(info, str): # info is the replacement 
                             # assert "" in msg_this[-1]['content'][0]['text']
                             oldtext = msg_this[-1]['content'][0]['text']
-                            breakpoint()
                             newtext = oldtext.replace(str([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]), str(info))
                             msg_this[-1]['content'][0]['text'] = newtext 
                         
@@ -2688,12 +2690,7 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
             ntokens_img = [(x==imgpad).to(float).sum().item() for x in sequences]
             ntokens_vid = [(x==videopad).to(float).sum().item() for x in sequences]
             ntokens = [x+y for x,y in zip(ntokens_img, ntokens_vid)]
-            # breakpoint()
-            # for xxseq,yy,img,gg in zip(sequences, ntokens, batch_images,grids):
-            #     print(f"ntoken={yy*4}, pixel={pixel_shape}, image={img}, grid={gg[-1]*gg[-2]}")
-            # assert len(expected_vidpad_list)>0 and len(expected_imgpad_list)>0, "should contain both video and image"
-            # if sum(expected_vidpad_list+expected_imgpad_list)!=sum(ntokens):
-            #     breakpoint()
+            
             print("should sum to the same", expected_vidpad_list+expected_imgpad_list, sum(expected_vidpad_list+expected_imgpad_list), ntokens)
             
             attention_mask = attention_mask.to(device)
@@ -2710,7 +2707,7 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
             action_mask = action_mask[:, max_input_len-1:-1] # this is to align with action log probs
             action_mask = action_mask.to(device)
             na_each = [x.sum().item() for x in action_mask]
-            
+
             samples_list.append(
                 Samples(
                     sequences=sequences,
@@ -2742,65 +2739,7 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                     penalty_bonus=penalty_bonus[i : i + self.strategy.args.micro_rollout_batch_size],
                 )
             )
-            # else:
-            #     pass
-                # # NOTE: concat all outputs to following format:
-                # #
-                # # | token token token | token token [EOS] | token token token token token | token token [EOS] | token token | token token token [EOS] |
-                # # |<---  prompt ----->|<---- answer ----->|<---------- prompt ----------->|<----- answer ---->|<- prompt -->|<-------- answer ------->|
-                # pad_token_id, eos_token_id = self.tokenizer.pad_token_id, self.tokenizer.eos_token_id
-                # sequences = []
-                # packed_seq_lens = []
-                # attention_mask = []
-                # num_actions = []
-                # output_tokens = [list(output.outputs[0].token_ids) for output in outputs]
-                # for idx, out in enumerate(output_tokens):
-                #     if out[-1]!=self.tokenizer.eos_token_id:
-                #         print(f"!!!! shorten to 10 tokens because no eos after maxlen truncation")
-                #         output_tokens[idx] = out[:10] # trick to save memory by shortening invalid 
-                        
-                # predictions = self.tokenizer.batch_decode(output_tokens, skip_special_tokens=False)
-                # print('!!!! peek pred', [predictions[0][:100],'...',predictions[0][-100:]])
-                
-                # for i, output in enumerate(outputs):
-                #     inp_token_ids = output.prompt_token_ids
-                #     input_len = len(output.prompt_token_ids)
-                #     out_token_ids = output_tokens[i]
-                #     output_len = len(out_token_ids)
-                #     packed_seq_lens.append(input_len + output_len)
-                #     sequences.extend(inp_token_ids + out_token_ids)
-                #     attention_mask.extend([i + 1] * (input_len + output_len))
-
-                #     # current_action_mask = [0] * (input_len - 1) + [1] * output_len + [0]
-                #     # num_actions.append(max(1, sum(current_action_mask)))
-                #     num_actions.append(max(1, output_len))
-
-                # sequences = torch.tensor(sequences, device=device).unsqueeze(0)
-                # attention_mask = torch.tensor(attention_mask, device=device).unsqueeze(0)
-                # action_mask = None
-                # response_length = torch.tensor(num_actions, device=device, dtype=torch.float)
-                # total_length = torch.tensor(packed_seq_lens, device=device, dtype=torch.float)
-                # # Collect for visual input
-                # visual_inputs = None
-                # if self.data_processor is not None:
-                #     visual_inputs = self.data_processor(prompts, self.prompt_max_len, device=device)
-                #     visual_inputs.pop("input_ids")
-                #     visual_inputs.pop("attention_mask")
-                #     visual_inputs = {k: v.to(device) for k, v in visual_inputs.items()}
-                # samples_list.append(
-                #     Samples(
-                #         sequences=sequences,
-                #         attention_mask=attention_mask,
-                #         action_mask=None,
-                #         num_actions=num_actions,
-                #         packed_seq_lens=packed_seq_lens,
-                #         response_length=response_length,
-                #         total_length=total_length,
-                #         # prompts=broadcast_all_prompts,
-                #         visual_inputs=visual_inputs
-                #     )
-                # )
-        # breakpoint()
+            
         return samples_list
 
     def flush(self):

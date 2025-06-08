@@ -70,7 +70,7 @@ setup(
         )
     ),
     description="A Ray-based High-performance RLHF framework.",
-    long_description=_fetch_readme(),
+    long_description="",
     long_description_content_type="text/markdown",
     install_requires=_fetch_requirements("requirements.txt"),
     extras_require={

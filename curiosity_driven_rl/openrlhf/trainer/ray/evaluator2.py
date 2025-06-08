@@ -10,7 +10,7 @@ import torch
 import torch.distributed
 from transformers.trainer import get_scheduler
 
-from openrlhf.datasets import PromptDataset, SFTDataset
+from openrlhf.datasets import PromptDataset
 from openrlhf.models import Actor
 from openrlhf.trainer import PPOTrainer, Evaluator
 from openrlhf.trainer.ppo_utils import Experience, RemoteExperienceMaker

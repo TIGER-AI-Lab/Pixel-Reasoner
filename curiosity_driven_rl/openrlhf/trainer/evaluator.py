@@ -317,7 +317,7 @@ class Evaluator(ABC):
     ) -> None:
         
         tmp = eval_data
-        eval_bsz = args.micro_rollout_batch_size 
+        eval_bsz = getattr(args, "eval_batch_size_pergpu", 8)
         eval_dataloader = self.strategy.setup_dataloader(
             tmp,
             eval_bsz, # should larger than world size?

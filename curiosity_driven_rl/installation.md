@@ -1,8 +1,8 @@
 ### Installation
 
 ```bash
-cd VL-Rethinker
-conda create -n rethinker python=3.10
+cd curiosity_driven_rl
+conda create -n curiosity python=3.10
 pip install -e .[vllm]
 pip install flash_attn --no-build-isolation
 ```

@@ -13,13 +13,12 @@ elif [[ "$benchmark" == "mathvista" ]]; then
 elif [[ "$benchmark" == "mathvision" ]]; then 
     export testdata="./data/MathVision_test3040.parquet"
 else 
-    export testdata="./data/${benchmark}.parquet"
+    export testdata="${working_dir}/data/${benchmark}.parquet"
 fi 
 
 export num_vllm=8
 export num_gpus=8
 export tagname=eval_${2}_${benchmark}
 export policy=${3} # /home/ma-user/work/data_mllm/pretrain_models/Qwen2.5-VL/Qwen2.5-VL-7B-Instruct
-
-bash ./scripts/eval_vlm_new.sh
+bash ${working_dir}/scripts/eval_vlm_new.sh
 

@@ -8,6 +8,8 @@ GPUS_PER_NODE=8
 
 MASTER_HOST="$VC_WORKER_HOSTS"
 MASTER_ADDR="${VC_WORKER_HOSTS%%,*}"
+export WANDB_MODE="offline"
+export WANDB_API_KEY="null"
 # export NCCL_SOCKET_IFNAME=ens2f5
 # export GLOO_SOCKET_IFNAME=${NCCL_SOCKET_IFNAME}
 export NCCL_NET_PLUGIN=none
@@ -18,7 +20,7 @@ export CUDA_LAUNCH_BLOCKING=1
 export HOST_IP=0.0.0.0
 export VLLM_HOST_IP=0.0.0.0
 
-working_dir=/path/to/VL-Rethinker
+working_dir=${working_dir:-"/path/to/PixelReasoner"}
 cd $working_dir
 export HF_ENDPOINT=https://hf-mirror.com
 nnode=$WORLD_SIZE
@@ -30,6 +32,7 @@ actor_ngpus=${actor_ngpus:-"1"}
 nsamples=${nsamples:-"1"}
 temperature=${temperature:-"0.6"}
 factor=${factor:-"1"}
+eval_bsz=${eval_bsz:-"8"}
 export MIN_PIXELS=$(( 256 * 28 * 28))
 export MAX_PIXELS=$(( 1280 * 28 * 28))
 tag=${tagname} # -n${nsamples}
@@ -69,7 +72,7 @@ if [ $nnode -gt 1 ]; then
             --vllm_tensor_parallel_size 1
             --micro_train_batch_size 4 
             --train_batch_size 256 
-            --micro_rollout_batch_size 8
+            --micro_rollout_batch_size 1
             --rollout_batch_size 1024
         )
     else
@@ -95,14 +98,15 @@ else
             --adam_offload
             --micro_train_batch_size 4 
             --train_batch_size 256 
-            --micro_rollout_batch_size $(( 64 * ${num_vllm} / ${nsamples} / ${factor}))
+            --micro_rollout_batch_size 1
             --rollout_batch_size 1024
     )
 fi
 
-LD_LIBRARY_PATH_VALUE=/path/to/nvidia/nvjitlink/lib:$LD_LIBRARY_PATH
+LD_LIBRARY_PATH_VALUE=$nvj_path:$LD_LIBRARY_PATH
+# LD_LIBRARY_PATH_VALUE=/path/to/nvidia/nvjitlink/lib:$LD_LIBRARY_PATH
 
-RUNTIME_ENV_JSON="{\"env_vars\": {\"RAY_DEBUG\": \"legacy\", \"LD_LIBRARY_PATH\": \"$LD_LIBRARY_PATH_VALUE\"}}"
+RUNTIME_ENV_JSON="{\"pip\": [\"Qwen-Agent\"], \"env_vars\": {\"RAY_DEBUG\": \"legacy\", \"LD_LIBRARY_PATH\": \"$LD_LIBRARY_PATH_VALUE\"}}"
 
 
 ray_output=$(ray start --head --num-gpus ${num_gpus})
@@ -154,5 +158,6 @@ ray job submit --address="http://127.0.0.1:8265" \
 --buffer_norm 0 \
 --train_vlm \
 --training_mode eval_only \
+--eval_batch_size_pergpu ${eval_bsz} \
 --eval_data ${testdata} \
 ${post_args[@]} 

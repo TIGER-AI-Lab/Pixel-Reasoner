@@ -50,14 +50,10 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
 
 ## Release Progress
 - [x] models.
-- [ ] data.
+- [x] data.
 - [ ] inference and evaluation code.
 - [x] instruction-tuning code.
 - [x] RL code. 
-
-
-### Dataset
-We will release the datasets on the huggingface at [TIGER-Lab/PixelReasoner-RL-Data](https://huggingface.co/datasets/TIGER-Lab/PixelReasoner-RL-Data) and [TIGER-Lab/PixelReasoner-SFT-Data](https://huggingface.co/datasets/TIGER-Lab/PixelReasoner-SFT-Data)
 
 ### Models
 Please check the [TIGER-Lab/PixelReasoner-RL-v1](https://huggingface.co/TIGER-Lab/PixelReasoner-RL-v1) and [TIGER-Lab/PixelReasoner-WarmStart](https://huggingface.co/TIGER-Lab/PixelReasoner-WarmStart)

@@ -123,6 +123,7 @@ bash ${working_dir}/scripts/eval_vlm_new.sh
 ```
 #### Video-Based Benchmarks
 For the MVBench, we extracted the frames from videos and construct the eval data that fits into our evaluation. The data is available in `JasperHaozhe/MVBench-EvalData-PixelReasoner`
+
 **1. Prepare Data**
 ```
 dataname=MVBench-EvalData-PixelReasoner
@@ -130,6 +131,7 @@ cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```
 **2. Inference and Evaluation**
+
 Under `curiosity_driven_rl` folder. Set `benchmark=mvbench`, `working_dir`, `policypath`, and `savefolder`,`tagname` for saving evaluation results. Run the following.
 ```
 benchmark=mvbench

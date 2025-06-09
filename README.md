@@ -48,7 +48,7 @@ Cultivating such pixel-space reasoning capabilities in VLMs presents notable cha
 ## Release Progress
 - [x] models.
 - [x] data.
-- [ ] inference and evaluation code.
+- [x] inference and evaluation code.
 - [x] instruction-tuning code.
 - [x] RL code. 
 
@@ -58,7 +58,7 @@ Please check the [TIGER-Lab/PixelReasoner-RL-v1](https://huggingface.co/TIGER-La
 ## 🚀Quick Start
 We proposed two-staged post-training. The instruction tuning is adapted from Open-R1. The Curiosity-Driven RL is adapted from VL-Rethinker.
 
-## Running Instruction Tuning
+### Running Instruction Tuning
 
 Follow these steps to start the instruction tuning process:
 
@@ -83,18 +83,38 @@ cd curiosity_driven_rl
 bash ./scripts/train_vlm_multi.sh
 ```
 
-### Inference and Evaluation
-Under 
-Run the following.
-```
-cd curiosity_driven_rl
-export testdata=/path/to/parquet
-export num_vllm=8
-export num_gpus=8
-export tagname=trials
-export policy=/path/to/model
+### One-Step Evaluation
+Evaluation data can be found in [the HF Collection](https://huggingface.co/collections/JasperHaozhe/evaldata-pixelreasoner-6846868533a23e71a3055fe9).
 
-bash scripts/eval_vlm_new.sh
+Let's take the vstar evaluation as an example. The HF data path is `JasperHaozhe/VStar-EvalData-PixelReasoner`.
+
+**1. Prepare Data**
+```
+dataname=VStar-EvalData-PixelReasoner
+cd onestep_evaluation
+bash prepare.sh ${dataname}
+```
+The bash script will download from HF, process the image paths, and move the data to `curiosity_driven_rl/data`. 
+
+Check the folder `curiosity_driven_rl/data`, you will know the downloaded parquet file is named as `vstar.parquet`. 
+
+**2. Inference and Evaluation**
+
+Install the openrlhf according to `curiosity_driven_rl/installation.md`.
+
+Under `curiosity_driven_rl` folder. Set `benchmark=vstar`, `working_dir`, `policypath`, and `savefolder`,`tagname` for saving evaluation results. Run the following.
+```
+export sys=vcot # define the system prompt
+export MIN_PIXELS=401408
+export MAX_PIXELS=4014080 # define the image resolution
+export savefolder=tooleval
+export eval_bsz=64 # vllm will processes this many queries 
+export nvj_path="/path/to/nvidia/nvjitlink/lib" # in case the system cannot fiind the nvjit library
+export working_dir="/path/to/curiosity_driven_rl"
+benchmark=vstar
+policypath="/path/to/policy"
+tagname=reproduce_best
+bash scripts/eval_7b.sh ${benchmark} ${tagname} ${policypath}
 ```
 
 

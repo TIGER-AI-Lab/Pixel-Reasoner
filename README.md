@@ -86,6 +86,7 @@ bash ./scripts/train_vlm_multi.sh
 ### One-Step Evaluation
 Evaluation data can be found in [the HF Collection](https://huggingface.co/collections/JasperHaozhe/evaldata-pixelreasoner-6846868533a23e71a3055fe9).
 
+#### Image-Based Benchmarks
 Let's take the vstar evaluation as an example. The HF data path is `JasperHaozhe/VStar-EvalData-PixelReasoner`.
 
 **1. Prepare Data**
@@ -104,17 +105,48 @@ Install the openrlhf according to `curiosity_driven_rl/installation.md`.
 
 Under `curiosity_driven_rl` folder. Set `benchmark=vstar`, `working_dir`, `policypath`, and `savefolder`,`tagname` for saving evaluation results. Run the following.
 ```
+benchmark=vstar
+export working_dir="/path/to/curiosity_driven_rl"
+export policy="/path/to/policy"
+export savefolder=tooleval
+export nvj_path="/path/to/nvidia/nvjitlink/lib" # in case the system cannot fiind the nvjit library
+############
 export sys=vcot # define the system prompt
 export MIN_PIXELS=401408
 export MAX_PIXELS=4014080 # define the image resolution
-export savefolder=tooleval
 export eval_bsz=64 # vllm will processes this many queries 
-export nvj_path="/path/to/nvidia/nvjitlink/lib" # in case the system cannot fiind the nvjit library
+export tagname=eval_vstar_bestmodel
+export testdata="${working_dir}/data/${benchmark}.parquet"
+export num_vllm=8
+export num_gpus=8
+bash ${working_dir}/scripts/eval_vlm_new.sh
+```
+#### Video-Based Benchmarks
+For the MVBench, we extracted the frames from videos and construct the eval data that fits into our evaluation. The data is available in `JasperHaozhe/MVBench-EvalData-PixelReasoner`
+**1. Prepare Data**
+```
+dataname=MVBench-EvalData-PixelReasoner
+cd onestep_evaluation
+bash prepare.sh ${dataname}
+```
+**2. Inference and Evaluation**
+Under `curiosity_driven_rl` folder. Set `benchmark=mvbench`, `working_dir`, `policypath`, and `savefolder`,`tagname` for saving evaluation results. Run the following.
+```
+benchmark=mvbench
 export working_dir="/path/to/curiosity_driven_rl"
-benchmark=vstar
-policypath="/path/to/policy"
-tagname=reproduce_best
-bash scripts/eval_7b.sh ${benchmark} ${tagname} ${policypath}
+export policy="/path/to/policy"
+export savefolder=tooleval
+export nvj_path="/path/to/nvidia/nvjitlink/lib" # in case the system cannot fiind the nvjit library
+############
+export sys=vcot # define the system prompt
+export MIN_PIXELS=401408
+export MAX_PIXELS=4014080 # define the image resolution
+export eval_bsz=64 # vllm will processes this many queries 
+export tagname=eval_vstar_bestmodel
+export testdata="${working_dir}/data/${benchmark}.parquet"
+export num_vllm=8
+export num_gpus=8
+bash ${working_dir}/scripts/eval_vlm_new.sh
 ```
 
 

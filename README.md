@@ -75,7 +75,18 @@ Follow these steps to start the instruction tuning process:
    ```
 
 ### Running Curiosity-Driven RL
-Under `curiosity_driven_rl` folder, check out [the installation instructions](curiosity_driven_rl/installation.md).
+First prepare data. Run the following will get the training data prepared under `curiosity_driven_rl/data` folder. 
+```
+dataname=TIGER-Lab/PixelReasoner-RL-Data
+cd onestep_evaluation
+bash prepare.sh ${dataname}
+```
+
+Then download model [TIGER-Lab/PixelReasoner-RL-v1](https://huggingface.co/TIGER-Lab/PixelReasoner-RL-v1).
+
+Under `curiosity_driven_rl` folder, install the environment following [the installation instructions](curiosity_driven_rl/installation.md).
+
+Set the data path, model path, wandb keys (if you want to use it) in `curiosity_driven_rl/scripts/train_vlm_multi.sh`.
 
 Run the following.
 ```bash
@@ -91,7 +102,7 @@ Let's take the vstar evaluation as an example. The HF data path is `JasperHaozhe
 
 **1. Prepare Data**
 ```
-dataname=VStar-EvalData-PixelReasoner
+dataname=
 cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```

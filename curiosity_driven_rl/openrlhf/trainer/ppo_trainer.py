@@ -1,9 +1,3 @@
-# /*
-#  * Modified by Haozhe Wang in 2025
-#  *
-#  * Licensed under the Apache License, Version 2.0 (the "License");
-#  */
-
 import os
 import os.path
 from abc import ABC
@@ -20,13 +14,14 @@ from openrlhf.models import Actor, GPTLMLoss, PolicyLoss, SFTLoss, ValueLoss
 from openrlhf.models.utils import masked_mean
 from openrlhf.utils.distributed_sampler import DistributedSampler
 from openrlhf.models.utils import log_probs_from_logits
-
-from .ppo_utils import AdaptiveKLController, Experience, FixedKLController, NaiveExperienceMaker, NaiveReplayBuffer, DATA_PROCESSOR_MAP
+from transformers import AutoProcessor
+from .ppo_utils import AdaptiveKLController, Experience, FixedKLController, NaiveExperienceMaker, NaiveReplayBuffer, DATA_PROCESSOR_MAP, Qwen2VLDataProcessor
 import random 
 import copy
 import numpy as np
 from collections import defaultdict
 import json
+import time
 
 
 
@@ -254,7 +249,7 @@ class PPOTrainer(ABC):
         self.best = -1
 
     def eval_unit(self, args, ep, global_step, dataloader):
-        keys = ['reward', 'response_length', 'validity','match','usefmt','round1_nwait']
+        keys = ['reward', 'response_length', 'validity','match','usefmt','round1_nwait','round0_nwait','curiosity','penalty']
         infos = {k:[] for k in keys}
         print("!!!! eval loader size", len(dataloader), 'step', global_step)
         batchsize = dataloader.batch_sampler.batch_size
@@ -319,17 +314,20 @@ class PPOTrainer(ABC):
         for qid, vlist in q2results.items():
             bench = qid.split('-')[0]
             macc = np.mean(vlist)
+            pak  = np.max(vlist)
             results_each[bench].append(macc)
+            results_each[bench+f"_pass@8"].append(pak)
         all_results = []
         dump_info = []
         modelpath = args.pretrain
         for k in results_each.keys():
             nc = np.sum(results_each[k])
             num  = len(results_each[k]) 
-            dump_info.append(dict(benchname=k, pass1=nc/num, ncorrect=nc, ntotal=num, modelpath=modelpath))
+            dump_info.append(dict(benchname=k, pass1=nc/num, ncorrect=float(nc), ntotal=float(num), modelpath=modelpath))
             print(f'!!!! [eval] from disk bench={k}, acc={np.mean(results_each[k])}={nc}/{num}')
-            all_results.extend(results_each[k])
+            # all_results.extend(results_each[k])
             results_each[k] = np.mean(results_each[k])
+            if 'pass' not in k: all_results.append(results_each[k])
         
         json.dump(dump_info, open(f'{args.ckpt_path}/logs/metrics_iter{self.eval_step}.json', 'w'))
         acc = np.mean(all_results)
@@ -353,7 +351,7 @@ class PPOTrainer(ABC):
             num_expected = len(rand_prompts)
             
             eval_save = False
-            if eval_data and not no_eval and ((args.eval_steps>0 and (idx+1)%args.eval_steps==0) or args.eval_steps<=0):
+            if eval_data and not no_eval and ((args.eval_steps>0 and (idx%args.eval_steps==0)) or args.eval_steps<=0):
                 print(f'!!!! doing evaluation @Step{steps}', eval_data)
                 if eval_only:
                     tmp = eval_data 
@@ -362,7 +360,7 @@ class PPOTrainer(ABC):
                 else: tmp = eval_data
                 # make sure eval_bsz*nsample%num_vllm == 0
                 
-                eval_bsz = args.micro_rollout_batch_size 
+                eval_bsz = getattr(args, "eval_batch_size_pergpu", 8) #  // strategy.world_size
                 eval_dataloader = self.strategy.setup_dataloader(
                     tmp,
                     eval_bsz, # should larger than world size?
@@ -397,11 +395,16 @@ class PPOTrainer(ABC):
                 if eval_only: 
                     print('!!!! [eval] exiting')
                     break 
-                if savepath is not None and eval_save and self.strategy.is_rank_0():
+                time.sleep(30)
+                if savepath is not None and os.path.exists(savepath) and eval_save and self.strategy.is_rank_0():
                     newpath = f"{savepath}_evalbest"
-                    os.rename(savepath, newpath)
+                    try:
+                        os.rename(savepath, newpath)
+                    except Exception as e:
+                        print(e)
+                        print('skip')
                     print(f"!!!! [eval] renaming {savepath}->{newpath}")
-            
+           
             print(f"===> [rbuffer] {len(rand_prompts)} queries @Epoch{ep}-RBufferNo{idx}(Total={num_rounds} for full Epoch)")
             exp_list = self.experience_maker.make_experience_list(rand_prompts, is_eval=False, eval_step=None, **self.generate_kwargs)
             print(f"===> [rbuffer] @Epoch{ep}-RBufferNo{idx}(Total={num_rounds} for full Epoch) done experiences, split to rbuffer items")
@@ -435,7 +438,8 @@ class PPOTrainer(ABC):
             client_states = {"consumed_samples": steps * args.rollout_batch_size}
             self.save_logs_and_checkpoints(args, steps, pbar, status, client_states)
             tag = f"global_step{steps}" 
-            if (steps +1)%2 == 0:
+            if (steps +1)%1 == 0:
+                print(f"===> done train step, save?")
                 savepath = self._save_checkpoint(args, tag, client_states)
             pbar.update()
             steps = steps + 1
@@ -529,7 +533,7 @@ class PPOTrainer(ABC):
         do_filter = not (getattr(self.strategy.args, "filter", "False") == "False")
         do_ssr = getattr(self.strategy.args, "filter", "False") == "SSR"
         # if do_filter:
-        rbuffer_status = self.replay_buffer.active_sampling(do_ssr=do_ssr)
+        rbuffer_status = self.replay_buffer.active_sampling(do_filter=do_filter, do_ssr=do_ssr)
         rbuffer_status = self.strategy.all_reduce(rbuffer_status)
         dataloader = DataLoader(
             self.replay_buffer,
@@ -661,7 +665,7 @@ class PPOTrainer(ABC):
             # rewards = experience.info['reward'] # tensor of (bsz,)
             waits = experience.info['round1_nwait']
                 
-
+        print(f"!!!!!!!!! ++++++ already inside training")
         # actor loss
         action_log_probs, output = self.actor(
             sequences, # left padded

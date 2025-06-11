@@ -2,7 +2,7 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 import json
 
-default_img = "/home/ma-user/work/haozhe/workspace/lmm-r1/data/DynaMath/assets/dyna-logo.png"
+default_img = ""
 def preprocess_data(data, input_template=None, input_key="input", apply_chat_template=None) -> str:
     if apply_chat_template:
         chat = data[input_key]

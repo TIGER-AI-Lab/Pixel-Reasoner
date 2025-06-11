@@ -189,6 +189,7 @@ def create_vllm_engines(
     vllm_engines = []
     num_gpus = int(tensor_parallel_size == 1)
     distributed_executor_backend = "uni" if tensor_parallel_size == 1 else "ray"
+    print(f"===> [verbose] creating {num_engines} vllm engines")
     for i in range(num_engines):
         bundle_indices = None
         scheduling_strategy = None
@@ -244,7 +245,11 @@ def create_vllm_engines(
                 gpu_memory_utilization=gpu_memory_utilization,
                 bundle_indices=bundle_indices if shared_pg else None,
                 enable_sleep_mode=vllm_enable_sleep,
-                limit_mm_per_prompt={"image": 8}
+                limit_mm_per_prompt={"image": 24+1},
+                mm_processor_kwargs={
+                                "min_pixels": int(os.getenv("MIN_PIXELS", 256 * 28 * 28)),
+                                "max_pixels": int(os.getenv("MAX_PIXELS", 5120 * 28 * 28)),
+                },
             )
         )
 

@@ -84,8 +84,32 @@ Set the data path, model path, wandb keys (if you want to use it) in `curiosity_
 Run the following.
 ```bash
 cd curiosity_driven_rl
+
+export temperature=1.0
+export trainver="dataname"
+export testver="testdataname"
+export filter=True # filtering zero advantages
+export algo=group # default for grpo
+export lr=10
+export MAX_PIXELS=4014080 # =[max_image_token]x28x28
+export sys=vcot # system prompt version
+export mode=train # [no_eval, eval_only, train]
+export policy=/path/to/policy
+export rbuffer=512 # replay buffer size
+export bsz=256 # global train batch size
+export evalsteps=4 
+export nactor=4 # 4x8 for actor if with multinode, no effect with single node
+export nvllm=32 # 4x8 for sampling if with multinode, no effect with single node
+export tp=1 # vllm tp, 1 for 7B
+export repeat=1 # data repeat
+export nepoch=3 # data epoch
+export logp_bsz=1 # must be 1
+export maxlen=10000 # generate_max_len
+export tagname=Train
+
 bash ./scripts/train_vlm_multi.sh
 ```
+**Note**: the number of prompts into vLLM inference is controlled by `--eval_batch_size_pergpu` during evaluation, and `args.rollout_batch_size // strategy.world_size` during training. Must set `logp_bsz=1` or `--micro_rollout_batch_size=1` for computing logprobs because model.generate() suffers from feature mismatch when batchsize > 1.
 
 ### One-Step Evaluation
 Evaluation data can be found in [the HF Collection](https://huggingface.co/collections/JasperHaozhe/evaldata-pixelreasoner-6846868533a23e71a3055fe9).
@@ -167,6 +191,20 @@ ValueError: The prompt (total length 10819) is too long to fit into the model (c
 
 This stems from too many image tokens, which means there could be too many images or the image resolution is too large and takes up many image tokens. 
 To address this problem, you could set `MAX_PIXELS=1024*28*28`, or you could set the max number images during training, via `max_imgnum` in `curiosity_driven_rl/openrlhf/trainer/ppo_utils/experience_maker.py`.
+
+**2. transformers and vLLM version mismatch**
+```
+Input and cos/sin must have the same dtype, got torch.float32 and torch.bfloat32.
+```
+Try reinstall transformers: `pip install --force-reinstall git+https://github.com/huggingface/transformers.git@9985d06add07a4cc691dc54a7e34f54205c04d4` and update vLLM. 
+
+**3. logp_bsz=1**
+```
+Exception: dump-info key solutions: {} should be {}
+```
+Must set `logp_bsz=1` or `--micro_rollout_batch_size=1` for computing logprobs because model.generate() suffers from feature mismatch when batchsize > 1.
+
+Thanks [@LiqiangJing](https://github.com/LiqiangJing) for feedback!
 
 ## Contact
 Contact jasper.whz@outlook.com for direct solution of any bugs.

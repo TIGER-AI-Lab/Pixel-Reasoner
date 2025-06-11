@@ -1,6 +1,6 @@
 set -x
 dataname=${1} # hfname VStar-EvalData-PixelReasoner
-
+hfuser=${hfuser:-"JasperHaozhe"}
 working_dir=/home/ma-user/work/haozhe/workspace/lmm-r1/pixelreasoner/curiosity_driven_rl
 if [[ ! -f "hfd.sh" ]]; then
     echo "downloading hfd.sh"
@@ -11,7 +11,7 @@ else
     echo "hfd.sh already exists."
 fi
 
-bash hfd.sh JasperHaozhe/${dataname} --dataset --tool wget
+bash hfd.sh ${hfuser}/${dataname} --dataset --tool wget
 cd ${dataname}
 unzip images.zip
 rm images.zip

@@ -70,55 +70,56 @@ Select frames from a video.
     def call(self, images, target_frames):
         return [images[tgt] for tgt in target_frames]
     
-# @register_tool("crop_image")
-# class CropImage(BaseTool):
-#     @property
-#     def description(self):
-#         return """
-# Zoom in on the image based on the bounding box coordinates. 
-# """.strip()
+@register_tool("zoom_in")
+class ZoomIn(BaseTool):
+    @property
+    def description(self):
+        return """
+Zoom in on the image based on the bounding box coordinates. 
+""".strip()
+    # "Zoom in on the image based on the bounding box coordinates.", "parameters": {"type": "object", "properties": {"bbox_2d": {"type": "array", "description": "normalized coordinates for bounding box of the region you want to zoom in. Values should be within [0.0,1.0]."
+    parameters = {
+        "type": "object",
+        "properties": {
+            "bbox_2d": {
+                "type": "array",
+                "description":"normalized coordinates for bounding box of the region you want to zoom in. Values should be within [0.0,1.0].",
+                # "description": "coordinates for bounding box of the area you want to zoom in. minimum value is 0 and maximum value is the width/height of the image.",
+                "items": {
+                    "type": "number",
+                }
+            },
+            "target_image":{
+                "type": "number",
+                "description": "The index of the image to crop. Index from 1 to the number of images. Choose 1 to operate on original image."
+            }
+        },
+        "required": ["bbox_2d", "target_image"]
+    }
 
-#     parameters = {
-#         "type": "object",
-#         "properties": {
-#             "bbox_2d": {
-#                 "type": "array",
-#                 "description": "normalized coordinates for bounding box of the region you want to zoom in. Values should be within [0.0,1.0].",
-#                 "items": {
-#                     "type": "number",
-#                 }
-#             },
-#             "target_image":{
-#                 "type": "number",
-#                 "description": "The index of the image to crop. Index from 1 to the number of images. Choose 1 to operate on original image."
-#             }
-#         },
-#         "required": ["bbox_2d", "target_image"]
-#     }
+    def call(self, image, bbox_2d,padding=(0.1,0.1)):
+        """
+        Crop the image based on the bounding box coordinates.
+        """
+        img_x, img_y = image.size
+        padding_tr = (600.0/img_x,600.0/img_y)
+        padding = (min(padding[0],padding_tr[0]),min(padding[1],padding_tr[1]))
 
-#     def call(self, image, bbox_2d,padding=(0.1,0.1)):
-#         """
-#         Crop the image based on the bounding box coordinates.
-#         """
-#         img_x, img_y = image.size
-#         padding_tr = (600.0/img_x,600.0/img_y)
-#         padding = (min(padding[0],padding_tr[0]),min(padding[1],padding_tr[1]))
-
-#         if bbox_2d[0] < 1 and bbox_2d[1] < 1 and bbox_2d[2] < 1 and bbox_2d[3] < 1:
-#             normalized_bbox_2d = (float(bbox_2d[0])-padding[0], float(bbox_2d[1])-padding[1], float(bbox_2d[2])+padding[0], float(bbox_2d[3])+padding[1])
-#         else:
-#             normalized_bbox_2d = (float(bbox_2d[0])/img_x-padding[0], float(bbox_2d[1])/img_y-padding[1], float(bbox_2d[2])/img_x+padding[0], float(bbox_2d[3])/img_y+padding[1])
-#         normalized_x1, normalized_y1, normalized_x2, normalized_y2 = normalized_bbox_2d
-#         normalized_x1 =min(max(0, normalized_x1), 1)
-#         normalized_y1 =min(max(0, normalized_y1), 1)
-#         normalized_x2 =min(max(0, normalized_x2), 1)
-#         normalized_y2 =min(max(0, normalized_y2), 1)
-#         cropped_img = image.crop((int(normalized_x1*img_x), int(normalized_y1*img_y), int(normalized_x2*img_x), int(normalized_y2*img_y)))
-#         w, h = cropped_img.size
-#         assert w > 28 and h > 28, f"Cropped image is too small: {w}x{h}"
+        if bbox_2d[0] < 1 and bbox_2d[1] < 1 and bbox_2d[2] < 1 and bbox_2d[3] < 1:
+            normalized_bbox_2d = (float(bbox_2d[0])-padding[0], float(bbox_2d[1])-padding[1], float(bbox_2d[2])+padding[0], float(bbox_2d[3])+padding[1])
+        else:
+            normalized_bbox_2d = (float(bbox_2d[0])/img_x-padding[0], float(bbox_2d[1])/img_y-padding[1], float(bbox_2d[2])/img_x+padding[0], float(bbox_2d[3])/img_y+padding[1])
+        normalized_x1, normalized_y1, normalized_x2, normalized_y2 = normalized_bbox_2d
+        normalized_x1 =min(max(0, normalized_x1), 1)
+        normalized_y1 =min(max(0, normalized_y1), 1)
+        normalized_x2 =min(max(0, normalized_x2), 1)
+        normalized_y2 =min(max(0, normalized_y2), 1)
+        cropped_img = image.crop((int(normalized_x1*img_x), int(normalized_y1*img_y), int(normalized_x2*img_x), int(normalized_y2*img_y)))
+        w, h = cropped_img.size
+        assert w > 28 and h > 28, f"Cropped image is too small: {w}x{h}"
 
 
-#         return cropped_img  
+        return cropped_img  
 
 @register_tool("crop_image_normalized")
 class CropImageNormalized(BaseTool):
@@ -1168,9 +1169,10 @@ def crop_image_normalized(image, bbox_2d,  padding=0.1):
 do_controlled_rectify = True
 def execute_tool(images, rawimages, args, toolname, is_video, function=None):
     if toolname=='select_frames':
+        assert is_video, "Execution Error: You attempted to `select_frames` from **image** not **video**. You should use `crop_image_normalized` instead for inspecting **image**."
         tgt = args['target_frames']
         if len(tgt)>8:
-            
+            assert False, f"Execution Error: You have selected {len(tgt)} frames in total. Think again which frames you need to check in details (no more than 8 frames)"
             message = f"You have selected {len(tgt)} frames in total. Think again which frames you need to check in details (no more than 8 frames)"
             # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
             ##### controlled modification
@@ -1190,8 +1192,10 @@ def execute_tool(images, rawimages, args, toolname, is_video, function=None):
                 selected_frames = []
             # selected_frames = function(images[0], [x-1 for x in tgt][::2]) # video is always in the first item
         elif max(tgt)>len(images[0]):
-            message = f"There are {len(images[0])} frames numbered in range [1,{len(images[0])}]. Your selection is out of range."
-            selected_frames = []
+            message = f"Execution Error: There are {len(images[0])} frames numbered in range [1,{len(images[0])}]. Your selection `target_frames={tgt}` is out of range."
+            assert False, message
+            # message = f"There are {len(images[0])} frames numbered in range [1,{len(images[0])}]. Your selection is out of range."
+            # selected_frames = []
         else:
             message = ""
             candidates = images[0]
@@ -1201,21 +1205,31 @@ def execute_tool(images, rawimages, args, toolname, is_video, function=None):
         return selected_frames, message
     else:
         tgt = args['target_image']
-        if is_video:
+        if is_video: # we allow zoom in directly on a video
             if len(images)==1: # there is only 
                 # we default the candidate images into video frames 
                 video_frames = images[0]
                 index = tgt - 1 
-                assert index<len(video_frames), f"Incorrect `target_image`. You can only select frames in the given video within [1,{len(video_frames)}]"
+                if index>=len(video_frames):
+                    print('!!!!!!! debug')
+                    print(f"{toolname}, target_image={tgt}, video_frames={video_frames}")
+                assert index<len(video_frames), f"Execution Error: Incorrect `target_image` argument in `crop_image_normalized` operation. You can only pick an image **from** the video within [1,{len(video_frames)}], but the current argument `target_image={tgt}`."
                 image_to_crop = video_frames[index]
             else: # there are zoomed images after the video; images = [[video], img, img, img]
-                cand_images = images[1:]
+                cand_images = images #[1:]
                 index = tgt -1
-                assert index<len(cand_images), f"Incorrect `target_image`. You can only select a previous frame within [1,{len(cand_images)}]"
+                assert index>=1, f"Execution Error: Incorrect `target_image` argument in `crop_image_normalized` operation. You can only pick an image within range [2,{len(images)}], but the current argument `target_image={tgt}`."
+                # if index>=len(cand_images):
+                #     print('!!!!!!! debug')
+                #     print(f"{toolname}, target_image={tgt}, candimage={cand_images}")
+                # assert index<len(cand_images), f"Execution Error: Incorrect `target_image` argument in `zoom_in` operation. You can only pick an image **after** the video within [1,{len(cand_images)}], but the current argument `target_image={tgt}`."
                 image_to_crop = cand_images[index]
         else:
             index =  tgt-1 
-            assert index<len(images), f"Incorrect `target_image`. You can only select previous images within [1,{len(images)}]"
+            if index>=len(images):
+                print('!!!!!!! debug')
+                print(f"{toolname}, target_image={tgt}, images={images}")
+            assert index<len(images), f"Execution Error: Incorrect `target_image` argument in `crop_image_normalized` operation. You can only pick an image within [1,{len(images)}]"
             
             if index<len(rawimages):
                 tmp = rawimages[index]
@@ -1258,9 +1272,7 @@ def get_prompt_from_messages(oldformat_messages, prompt_maker, tools, processor)
         ) for msg in messages]
 
     messages = [[x.model_dump() for x in conversations] for conversations in messages]
-    
     prompts = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    
     return prompts, messages
     
     
@@ -1876,10 +1888,8 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                         for k in ['solutions', 'gts', 'round0_correctness', 'round1_correctness','validity', 'reward', 'round1_nwait', 'round0_nwait',  'qids', 'questions', 'num_actions','curiosity','penalty']: # error_info, usefmt, use_codes
                             # if k=='sol': continue 
                             if k not in dump_info: continue 
-                            
                             if len(dump_info[k])!=num:
                                 raise Exception(f"dump-info key {k}: {len(dump_info[k])} should be {num}")
-                            
                             v = dump_info[k][i]
                             
                             entry[k] = v
@@ -2257,16 +2267,15 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                 video_flag = all_video_flags[out_idx]
                 error_flag = False 
                 temp_error_flags[out_idx] = False
+                tool_params = None
                 try:
                     tool_params = parse_last_tool(qatext) 
                     tool_name = tool_params['name']
                     tool_args = tool_params['arguments']
-                    # if tool_name in {'crop_image_normalized','crop_image'}:
+                    
                     raw_result = execute_tool(imagelist, rawimagelist, tool_args, tool_name, is_video=video_flag, function=self.operations[tool_name].call)
                     if tool_name=='select_frames': 
-                        if not video_flag:
-                            selected_frames = []
-                            info = "Execution error:\nYou attempted to select frames from an **image**, but this operation is only desgined for analyzing videos. Think again.\n"
+                        
                         selected_frames, info = raw_result 
                         if not isinstance(info, str): # info is the replacement 
                             # assert "" in msg_this[-1]['content'][0]['text']
@@ -2310,8 +2319,6 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                 except Exception as e:
                     print('!!!!!!! warning')
                     print(e)
-                    # print('tool args', tool_args, tool_name)
-                    # breakpoint()
                     error_info = str(e)
                     msg_this.append(
                         dict(role='user', content=[
@@ -2445,7 +2452,6 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                     bonus = discount*(curiosity + penalty)
                     this_r += bonus
                 
-                #############
                 this_rewards.append(this_r)
                 this_cur.append(curiosity)
                 this_pen.append(penalty)
@@ -2730,7 +2736,7 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                     penalty_bonus=penalty_bonus[i : i + self.strategy.args.micro_rollout_batch_size],
                 )
             )
-            
+
         return samples_list
 
     def flush(self):

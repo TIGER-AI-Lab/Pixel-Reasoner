@@ -420,13 +420,7 @@ class NaiveReplayBuffer(ABC):
                 zero_questions.append(question)
             else:
                 non_zero_questions.append(question)
-        # for question, diff, rew in zip(questions, diffs, rewards):
-        #     if diff==0:
-        #         if rew>0.95:
-        #             pos_items.append(question)
-        #         zero_questions.append(question)
-        #     else:
-        #         non_zero_questions.append(question)
+        
         self.keep_items.extend([self.items[ii] for ii in non_zero_questions])
         zero_percentage = len(zero_questions)/len(questions)
         ret_info = {"mean_reward": mean_rewards, 
@@ -464,35 +458,21 @@ class NaiveReplayBuffer(ABC):
             return ret_info
             
         else:
-            #######################
-            # numtotal = len(idxlist)//2
-            # ratio = 0.1 # 0.1  if self.use_pos else 0.0
-            # num_pos = int(ratio*len(non_zero_questions))
-            # if len(non_zero_questions)==0: # there are no non-zero questions 
-            #     num_pos = min(numtotal, len(pos_items))
-            #     print(f'!!!! [debug] warning:  because non-zero questions {len(non_zero_questions)} qas is scarce, we include more positive items')
-            # elif len(non_zero_questions) < numtotal//2:
-            #     print(f'!!!! [debug] warning:  because non-zero questions {len(non_zero_questions)} qas is scarce, we include more positive items')
-            #     num_pos = min(num_pos, numtotal//2-len(non_zero_questions))
-            
-            # sel = non_zero_questions + pos_items[:num_pos]
-            # if len(non_zero_questions)==0:
-            #     sel = idxlist 
-            #     print(f"!!!! [warning] queries all-zero")
-            # sel_alist = np.array([abs(self.items[idx].advantages[0].item())+1e-4 for idx in sel])
-            # sel_p = sel_alist/np.sum(sel_alist)
-            # newlist = []
-            # numiter = 0
-            # while numtotal>0:
-            #     if numtotal>len(sel):
-            #         newlist.extend(sel)
-            #     else:
-            #         newlist.extend(np.random.choice(sel, size=numtotal, p=sel_p if do_ssr else None))
-            #     numiter += 1
-            #     numtotal -= len(sel)
-            # print(f"!!!! [debug] SSR={do_ssr}, replay buffer repeat for {numiter} times to fill up nonzero questions")
-            # self.items = [self.items[idx] for idx in newlist]
-            ################
+            num_repeat = 0 if len(non_zero_questions)==0 else len(self.items)//len(non_zero_questions)
+            new_items = []
+            random.shuffle(non_zero_questions)
+            new_items.extend(non_zero_questions)
+            num_remain = len(self.items) - len(new_items)
+            if num_remain>0:
+                for _ in range(num_repeat):
+                    random.shuffle(non_zero_questions)
+                    new_items.extend(non_zero_questions)
+                
+                num_remain = len(self.items) % len(non_zero_questions)
+                if num_remain>0:
+                    random.shuffle(non_zero_questions)
+                    new_items.extend(non_zero_questions[:num_remain])   
+                self.items = [self.items[idx] for idx in new_items]
             
             print(f'!!!! [debug] warning: in filter mode, the remaining non-zero is too scarce, {len(non_zero_questions)} qas will repeat to {numtotal}')
             ratio = 0.0
@@ -517,7 +497,8 @@ class NaiveReplayBuffer(ABC):
             ################
             sel = np.arange(len(self.keep_items))
             numtotal -= len(current_effective)
-            sel_alist = np.array([abs(iitem.advantages[0].item())+1e-4 for iitem in list(self.keep_items)])*1.0
+            scaler = 1.0
+            sel_alist = np.array([abs(iitem.advantages[0].item())+1e-4 for iitem in list(self.keep_items)])*scaler
             sel_p = sel_alist/np.sum(sel_alist)
             newlist = []
             numiter = 0

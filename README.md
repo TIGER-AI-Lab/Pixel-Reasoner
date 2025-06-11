@@ -155,6 +155,16 @@ export num_gpus=8
 bash ${working_dir}/scripts/eval_vlm_new.sh
 ```
 
+## Possible Exceptions
+**1. Exceeding Model Context Length**
+If you do sampling (e.g., during training) and set a larger `MAX_PIXELS`, you could encounter the following:
+```
+ValueError: The prompt (total length 10819) is too long to fit into the model (context length 10240). Make sure that `max_model_len` is no smaller than the number of text tokens plus multimodal tokens. For image inputs, the number of image tokens depends on the number of images, and possibly their aspect ratios as well.
+```
+
+This stems from too many image tokens, which means there could be too many images or the image resolution is too large and takes up many image tokens. 
+To address this problem, you could set `MAX_PIXELS=1024*28*28`, or you could set the max number images during training, via `max_imgnum` in `curiosity_driven_rl/openrlhf/trainer/ppo_utils/experience_maker.py`.
+
 ## Contact
 Contact jasper.whz@outlook.com for direct solution of any bugs.
 

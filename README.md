@@ -70,7 +70,8 @@ Follow these steps to start the instruction tuning process:
 ### Running Curiosity-Driven RL
 First prepare data. Run the following will get the training data prepared under `curiosity_driven_rl/data` folder. 
 ```
-dataname=TIGER-Lab/PixelReasoner-RL-Data
+dataname=PixelReasoner-RL-Data
+export hfuser=TIGER-Lab
 cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```

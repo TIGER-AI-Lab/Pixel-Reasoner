@@ -30,7 +30,7 @@
 <sup>&Dagger;</sup>Correspondence.
 </span>
 
-**Note:**: Contact jasper.whz@outlook.com for direct solution of any bugs.
+
 
 ## 🔥News
 - [2025/5/25] We made really fun demos! You can now play with the [**online demo**](https://huggingface.co/spaces/TIGER-Lab/Pixel-Reasoner). Have fun!
@@ -155,6 +155,8 @@ export num_gpus=8
 bash ${working_dir}/scripts/eval_vlm_new.sh
 ```
 
+## Contact
+Contact jasper.whz@outlook.com for direct solution of any bugs.
 
 
 ## Citation

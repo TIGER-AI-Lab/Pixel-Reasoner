@@ -95,7 +95,7 @@ Let's take the vstar evaluation as an example. The HF data path is `JasperHaozhe
 
 **1. Prepare Data**
 ```
-dataname=
+dataname=VStar-EvalData-PixelReasoner
 cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```
@@ -154,6 +154,9 @@ export num_vllm=8
 export num_gpus=8
 bash ${working_dir}/scripts/eval_vlm_new.sh
 ```
+
+#### Inference of Qwen2.5-VL-Instruct
+Set `sys=notool` for textual reasoning with Qwen2.5-VL-Instruct . `sys=vcot` can trigger zero-shot use of visual operations but may also induce unexpected behaviors.
 
 ## Possible Exceptions
 **1. Exceeding Model Context Length**

@@ -2428,8 +2428,8 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                     this_r = 0.0 
                 # incentivize select_frames 
                 # curiosity: if rapr==0.5, fair
-                # curiosity = 0.0 
-                # penalty = 0.0
+                curiosity = 0.0 
+                penalty = 0.0
                 if isvideo and ncall>0.1: # for video
                     curiosity = max(0.3 - rapr, 0.0) / 1.5
                     curiosity = curiosity / rapr * 0.25 # the maximum curiosity is 0.25
@@ -2444,14 +2444,7 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
                     # bonus = max(0.0, discount*(curiosity + penalty))
                     bonus = discount*(curiosity + penalty)
                     this_r += bonus
-                #################
-                # if has_correct_without_tool: # then we can encourage correct tool
-                #     if mres>0.5 and ncall>0.1: # discourage unnecessary tool
-                #         this_r = max(0.7, 1.0-ncall*0.06)
-                # else: # there is no correct without tool
-                #     if mres>0.5: # encourage efficient tool
-                #         if ncall<1.1: this_r = 1.06
-                #         else: this_r = max(0.7, 1.0-(ncall-1)*0.06)
+                
                 #############
                 this_rewards.append(this_r)
                 this_cur.append(curiosity)
@@ -2485,8 +2478,6 @@ class RemoteExperienceMaker(NaiveExperienceMaker):
         # groupsize = args.micro_rollout_batch_size
         device = 'cpu'
         groupsize = args.micro_rollout_batch_size
-        # astart = self.data_processor.processor.tokenizer.encode("<|im_start|>assistant\n", add_special_tokens=False)
-        # aend = self.data_processor.processor.tokenizer.encode("<|im_end|>\n", add_special_tokens=False)
         imgpad = self.data_processor.processor.tokenizer.encode("<|image_pad|>", add_special_tokens=False)[0]
         videopad = self.data_processor.processor.tokenizer.encode("<|video_pad|>", add_special_tokens=False)[0]
         pad_token_id, eos_token_id = self.tokenizer.pad_token_id, self.tokenizer.eos_token_id

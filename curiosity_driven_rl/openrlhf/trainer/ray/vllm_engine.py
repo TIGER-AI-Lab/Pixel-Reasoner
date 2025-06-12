@@ -224,7 +224,7 @@ def create_vllm_engines(
             num_actors = 1
         else:
             num_actors = num_total_actors // num_engines + int(i < num_total_actors % num_engines)
-
+        print(f"====> warning {os.getenv('MAX_PIXELS')}")
         vllm_engines.append(
             LLMRayActor.options(
                 num_cpus=0,

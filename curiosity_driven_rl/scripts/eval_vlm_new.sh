@@ -33,8 +33,8 @@ nsamples=${nsamples:-"1"}
 temperature=${temperature:-"0.6"}
 factor=${factor:-"1"}
 eval_bsz=${eval_bsz:-"8"}
-export MIN_PIXELS=$(( 256 * 28 * 28))
-export MAX_PIXELS=$(( 1280 * 28 * 28))
+MIN_PIXELS=${MIN_PIXELS:-"$(( 512 * 28 * 28))"}
+MAX_PIXELS=${MAX_PIXELS:-"$(( 5120 * 28 * 28))"}
 tag=${tagname} # -n${nsamples}
 rule_reward=${rule:-"none"}
 sys=${sys:-"default"}
@@ -106,7 +106,7 @@ fi
 LD_LIBRARY_PATH_VALUE=$nvj_path:$LD_LIBRARY_PATH
 # LD_LIBRARY_PATH_VALUE=/path/to/nvidia/nvjitlink/lib:$LD_LIBRARY_PATH
 
-RUNTIME_ENV_JSON="{\"pip\": [\"Qwen-Agent\"], \"env_vars\": {\"RAY_DEBUG\": \"legacy\", \"LD_LIBRARY_PATH\": \"$LD_LIBRARY_PATH_VALUE\"}}"
+RUNTIME_ENV_JSON="{\"pip\": [\"Qwen-Agent\"], \"env_vars\": {\"MAX_PIXELS\": \"$MAX_PIXELS\", \"MIN_PIXELS\": \"$MIN_PIXELS\", \"RAY_DEBUG\": \"legacy\", \"LD_LIBRARY_PATH\": \"$LD_LIBRARY_PATH_VALUE\"}}"
 
 
 ray_output=$(ray start --head --num-gpus ${num_gpus})
@@ -125,7 +125,7 @@ ray job submit --address="http://127.0.0.1:8265" \
 --n_samples_per_prompt ${nsamples} \
 --max_epochs 1 \
 --num_episodes 3 \
---prompt_max_len 2048 \
+--prompt_max_len 10000 \
 --max_samples 100000 \
 --generate_max_len ${maxlen} \
 --advantage_estimator ${algo} \

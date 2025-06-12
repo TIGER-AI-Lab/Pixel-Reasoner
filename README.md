@@ -185,13 +185,16 @@ Set `sys=notool` for textual reasoning with Qwen2.5-VL-Instruct . `sys=vcot` can
 
 ## Possible Exceptions
 **1. Exceeding Model Context Length**
+
 If you do sampling (e.g., during training) and set a larger `MAX_PIXELS`, you could encounter the following:
 ```
 ValueError: The prompt (total length 10819) is too long to fit into the model (context length 10240). Make sure that `max_model_len` is no smaller than the number of text tokens plus multimodal tokens. For image inputs, the number of image tokens depends on the number of images, and possibly their aspect ratios as well.
 ```
 
-This stems from too many image tokens, which means there could be too many images or the image resolution is too large and takes up many image tokens. 
-To address this problem, you could set `MAX_PIXELS=1024*28*28`, or you could set the max number images during training, via `max_imgnum` in `curiosity_driven_rl/openrlhf/trainer/ppo_utils/experience_maker.py`.
+This stems from:
+1. max model length is too short, try adjust `generate_max_len + prompt_max_len`
+2. too many image tokens, which means there could be too many images or the image resolution is too large and takes up many image tokens. 
+To address this problem during training, you could set smaller `MAX_PIXELS`, or you could set the max number images during training, via `max_imgnum` in `curiosity_driven_rl/openrlhf/trainer/ppo_utils/experience_maker.py`.
 
 **2. transformers and vLLM version mismatch**
 ```
@@ -205,10 +208,25 @@ Exception: dump-info key solutions: {} should be {}
 ```
 Must set `logp_bsz=1` or `--micro_rollout_batch_size=1` for computing logprobs because model.generate() suffers from feature mismatch when batchsize > 1.
 
+**4. Reproduction Mismath**
+
+Correct values of `MAX_PIXELS` and `MIN_PIXELS` are crucial for reproducing the results. 
+1. make sure the env variables are correctly set
+2. make sure the vLLM engines correctly read the env variables
+
+When using ray parallelism, chances are that the env variables are only set on one machine but not all machines. To fix this, add ray env variables as follows:
+```
+RUNTIME_ENV_JSON="{\"env_vars\": {\"MAX_PIXELS\": \"$MAX_PIXELS\", \"MIN_PIXELS\": \"$MIN_PIXELS\"}"
+
+ray job submit --address="http://127.0.0.1:8265" \
+--runtime-env-json="$RUNTIME_ENV_JSON" \
+```
+
 Thanks [@LiqiangJing](https://github.com/LiqiangJing) for feedback!
 
 ## Contact
 Contact Haozhe (jasper.whz@outlook.com) for direct solution of any bugs in RL.
+
 Contact Muze for SFT.
 
 

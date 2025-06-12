@@ -71,7 +71,7 @@ Follow these steps to start the instruction tuning process:
 First prepare data. Run the following will get the training data prepared under `curiosity_driven_rl/data` folder. 
 ```
 dataname=PixelReasoner-RL-Data
-export hfuser=TIGER-Lab
+export hf_user=TIGER-Lab
 cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```
@@ -208,7 +208,9 @@ Must set `logp_bsz=1` or `--micro_rollout_batch_size=1` for computing logprobs b
 Thanks [@LiqiangJing](https://github.com/LiqiangJing) for feedback!
 
 ## Contact
-Contact jasper.whz@outlook.com for direct solution of any bugs.
+Contact Haozhe (jasper.whz@outlook.com) for direct solution of any bugs in RL.
+Contact Muze for SFT.
+
 
 
 ## Citation

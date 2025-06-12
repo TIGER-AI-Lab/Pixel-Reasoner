@@ -216,7 +216,7 @@ Correct values of `MAX_PIXELS` and `MIN_PIXELS` are crucial for reproducing the 
 
 When using ray parallelism, chances are that the env variables are only set on one machine but not all machines. To fix this, add ray env variables as follows:
 ```
-RUNTIME_ENV_JSON="{\"env_vars\": {\"MAX_PIXELS\": \"$MAX_PIXELS\", \"MIN_PIXELS\": \"$MIN_PIXELS\"}"
+RUNTIME_ENV_JSON="{\"env_vars\": {\"MAX_PIXELS\": \"$MAX_PIXELS\", \"MIN_PIXELS\": \"$MIN_PIXELS\"}}"
 
 ray job submit --address="http://127.0.0.1:8265" \
 --runtime-env-json="$RUNTIME_ENV_JSON" \

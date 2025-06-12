@@ -208,7 +208,9 @@ Must set `logp_bsz=1` or `--micro_rollout_batch_size=1` for computing logprobs b
 Thanks [@LiqiangJing](https://github.com/LiqiangJing) for feedback!
 
 ## Contact
-Contact jasper.whz@outlook.com for direct solution of any bugs.
+Contact Haozhe (jasper.whz@outlook.com) for direct solution of any bugs in RL.
+Contact Muze for SFT.
+
 
 
 ## Citation

@@ -1,6 +1,6 @@
 set -x
 dataname=${1} # hfname VStar-EvalData-PixelReasoner
-hfuser=${hfuser:-"JasperHaozhe"}
+hfuser=${hfuser:-"TIGER-Lab"}
 working_dir=/home/ma-user/work/haozhe/workspace/lmm-r1/pixelreasoner/curiosity_driven_rl
 if [[ ! -f "hfd.sh" ]]; then
     echo "downloading hfd.sh"

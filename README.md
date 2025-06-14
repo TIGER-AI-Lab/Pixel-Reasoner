@@ -36,7 +36,12 @@
 - [2025/5/25] We made really fun demos! You can now play with the [**online demo**](https://huggingface.co/spaces/TIGER-Lab/Pixel-Reasoner). Have fun!
 - [2025/5/22] We released models-v1. Now actively working on data and code release.
 
-
+## Features
+- Supports Instruction Tuning with multi-turn trajectories
+- Supports RL with multi-turn trajectories
+- Supports RL with mixed video and image data
+- Supports Inference/Evaluation with vLLM 
+  
 ## Overview
 ![overview](./assets/teaser.png)
 

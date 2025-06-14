@@ -51,6 +51,11 @@ Please check the [TIGER-Lab/PixelReasoner-RL-v1](https://huggingface.co/TIGER-La
 ## 🚀Quick Start
 We proposed two-staged post-training. The instruction tuning is adapted from Open-R1. The Curiosity-Driven RL is adapted from VL-Rethinker.
 
+### DATA
+Instruction Tuning: [TIGER-Lab/PixelReasoner-SFT-Data](https://huggingface.co/datasets/TIGER-Lab/PixelReasoner-SFT-Data)
+RL Queries: [TIGER-Lab/PixelReasoner-RL-Data](https://huggingface.co/datasets/TIGER-Lab/PixelReasoner-RL-Data)
+Evaluation: [HF Collections](https://huggingface.co/collections/JasperHaozhe/evaldata-pixelreasoner-6846868533a23e71a3055fe9)
+
 ### Running Instruction Tuning
 
 Follow these steps to start the instruction tuning process:

@@ -221,7 +221,7 @@ class Qwen2VLSFTToolTrainer(Trainer):
         # In GRPOTrainer, we preprocess data, so using the model's signature columns doesn't work.
         # Instead, we set them to the columns expected by the `training_step` method, hence the override.
         if self._signature_columns is None:
-            self._signature_columns = ["message_list","z2orcorrect"]
+            self._signature_columns = ["message_list"]
 
 
     # Get the per-token log probabilities for the completions for the model and the reference model
@@ -306,7 +306,7 @@ class Qwen2VLSFTToolTrainer(Trainer):
 
 
 
-    def create_assistant_response_mask(self,inputs, processor, if_use_weighted:bool=False,z2orcorrect:List[bool]=None):
+    def create_assistant_response_mask(self,inputs, processor, if_use_weighted:bool=False):
         """
         Create a boolean mask for the assistant's responses based on the chat template format.
         """
@@ -323,7 +323,7 @@ class Qwen2VLSFTToolTrainer(Trainer):
         # For each sequence in the batch
         for i in range(inputs.shape[0]):
             sequence = inputs[i]
-            z2orcorrect_i = z2orcorrect[i]
+            
 
             # Find all im_start positions
             im_start_positions = (sequence == im_start).nonzero().flatten()
@@ -371,7 +371,7 @@ class Qwen2VLSFTToolTrainer(Trainer):
         device = self.accelerator.device
         message_lists = [x["message_list"] for x in inputs]
 
-        z2orcorrects = [x["z2orcorrect"] for x in inputs]
+        # z2orcorrects = [x["z2orcorrect"] for x in inputs]
 
 
         # Handle both pre-loaded images and image paths
@@ -395,7 +395,7 @@ class Qwen2VLSFTToolTrainer(Trainer):
         padded_input_ids = inputs.input_ids
 
 
-        all_logits_to_keep = self.create_assistant_response_mask(padded_input_ids, self.processing_class,z2orcorrect=z2orcorrects)
+        all_logits_to_keep = self.create_assistant_response_mask(padded_input_ids, self.processing_class)
         # Concatenate prompt_mask with completion_mask for logit computation
         # attention_mask = torch.cat([prompt_mask, completion_mask], dim=1)  # (B*G, P+C)
         # pixel_values = prompt_inputs["pixel_values"].repeat(self.num_generations, 1)

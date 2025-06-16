@@ -186,7 +186,7 @@ if [ $nnode -gt 1 ]; then
             --vllm_tensor_parallel_size ${tp}
             --micro_train_batch_size ${mbsz} 
             --train_batch_size ${bsz} 
-            --micro_rollout_batch_size ${logp_bsz}
+            --micro_rollout_batch_size 1
             --rollout_batch_size ${rbuffer}
         )
     
@@ -200,7 +200,7 @@ else
             --adam_offload
             --micro_train_batch_size 4 
             --train_batch_size ${bsz}
-            --micro_rollout_batch_size 4
+            --micro_rollout_batch_size 1
             --rollout_batch_size ${rbuffer}
     )
 fi

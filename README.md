@@ -95,7 +95,7 @@ Under `curiosity_driven_rl` folder, install the environment following [the insta
 
 Set the data path, model path, wandb keys (if you want to use it) in `curiosity_driven_rl/scripts/train_vlm_multi.sh`.
 
-Run the following.
+Run the following for multinode training (e.g., 4x8 actor + 4x8 vllm).
 ```bash
 cd curiosity_driven_rl
 
@@ -112,8 +112,8 @@ export policy=/path/to/policy
 export rbuffer=512 # replay buffer size
 export bsz=256 # global train batch size
 export evalsteps=4 
-export nactor=4 # 4x8 for actor if with multinode, no effect with single node
-export nvllm=32 # 4x8 for sampling if with multinode, no effect with single node
+export nactor=4 # 4x8 for actor if with multinode
+export nvllm=32 # 4x8 for sampling if with multinode
 export tp=1 # vllm tp, 1 for 7B
 export repeat=1 # data repeat
 export nepoch=3 # data epoch
@@ -123,6 +123,35 @@ export tagname=Train
 
 bash ./scripts/train_vlm_multi.sh
 ```
+
+Run the following for single-node training.
+```bash
+cd curiosity_driven_rl
+
+export temperature=1.0
+export trainver="dataname"
+export testver="testdataname"
+export filter=True # filtering zero advantages
+export algo=group # default for grpo
+export lr=10
+export MAX_PIXELS=4014080 # =[max_image_token]x28x28
+export sys=vcot # system prompt version
+export mode=train # [no_eval, eval_only, train]
+export policy=/path/to/policy
+export rbuffer=512 # replay buffer size
+export bsz=256 # global train batch size
+export evalsteps=1
+export mbsz=2 
+export tp=1 # vllm tp, 1 for 7B
+export repeat=1 # data repeat
+export nepoch=3 # data epoch
+export logp_bsz=1 # must be 1
+export maxlen=10000 # generate_max_len
+export tagname=Train
+
+bash ./scripts/train_vlm_single.sh
+```
+
 **Note**: the number of prompts into vLLM inference is controlled by `--eval_batch_size_pergpu` during evaluation, and `args.rollout_batch_size // strategy.world_size` during training. Must set `logp_bsz=1` or `--micro_rollout_batch_size=1` for computing logprobs because model.generate() suffers from feature mismatch when batchsize > 1.
 
 ### One-Step Evaluation

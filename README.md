@@ -154,7 +154,7 @@ bash ./scripts/train_vlm_single.sh
 
 **Note**: the number of prompts into vLLM inference is controlled by `--eval_batch_size_pergpu` during evaluation, and `args.rollout_batch_size // strategy.world_size` during training. Must set `logp_bsz=1` or `--micro_rollout_batch_size=1` for computing logprobs because model.generate() suffers from feature mismatch when batchsize > 1.
 
-### One-Step Evaluation
+### Evaluation
 Evaluation data can be found in [the HF Collection](https://huggingface.co/collections/JasperHaozhe/evaldata-pixelreasoner-6846868533a23e71a3055fe9).
 
 #### Image-Based Benchmarks

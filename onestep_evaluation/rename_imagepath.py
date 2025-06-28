@@ -1,7 +1,7 @@
 import pandas as pd 
 import sys
 import os
-dataname = "vstar"
+dataname = sys.argv[2] # this is the downloaded parquet file name
 working_dir = sys.argv[1]
 df = pd.read_parquet(f'{working_dir}/data/{dataname}.parquet')
 

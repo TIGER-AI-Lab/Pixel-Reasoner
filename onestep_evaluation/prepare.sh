@@ -1,5 +1,6 @@
 set -x
-dataname=${1} # hfname VStar-EvalData-PixelReasoner
+dataname=${dataname:-"${1}"} # hfname VStar-EvalData-PixelReasoner
+newdataname=${newdataname:-""} # this is the downloaded parquet file name
 hfuser=${hfuser:-"TIGER-Lab"}
 working_dir=/home/ma-user/work/haozhe/workspace/lmm-r1/pixelreasoner/curiosity_driven_rl
 if [[ ! -f "hfd.sh" ]]; then
@@ -37,6 +38,6 @@ cd ..
 rm -r ${dataname}
 
 # rename the image path
-python rename_imagepath.py ${working_dir}
+python rename_imagepath.py ${working_dir} ${newdataname}
 
  

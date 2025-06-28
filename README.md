@@ -157,12 +157,18 @@ bash ./scripts/train_vlm_single.sh
 ### Evaluation
 Evaluation data can be found in [the HF Collection](https://huggingface.co/collections/JasperHaozhe/evaldata-pixelreasoner-6846868533a23e71a3055fe9).
 
+**Note:** For users in the mainload of China, please set the hf-endpoint as follows. *Otherwise, the hf downloader won't work as expected*.
+```bash
+export HF_ENDPOINT=https://hf-mirror.com
+```
+
 #### Image-Based Benchmarks
 Let's take the vstar evaluation as an example. The HF data path is `JasperHaozhe/VStar-EvalData-PixelReasoner`.
 
 **1. Prepare Data**
 ```
-dataname=VStar-EvalData-PixelReasoner
+export dataname=VStar-EvalData-PixelReasoner
+export newdataname=mvbench
 cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```
@@ -197,7 +203,8 @@ For the MVBench, we extracted the frames from videos and construct the eval data
 
 **1. Prepare Data**
 ```
-dataname=MVBench-EvalData-PixelReasoner
+export dataname=MVBench-EvalData-PixelReasoner
+export newdataname=mvbench
 cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```

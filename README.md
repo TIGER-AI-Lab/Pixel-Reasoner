@@ -90,7 +90,7 @@ cd onestep_evaluation
 bash prepare.sh ${dataname}
 ```
 
-Then download model [TIGER-Lab/PixelReasoner-RL-v1](https://huggingface.co/TIGER-Lab/PixelReasoner-RL-v1).
+Then download model https://huggingface.co/TIGER-Lab/PixelReasoner-WarmStart. We use checkpoint-246.
 
 Under `curiosity_driven_rl` folder, install the environment following [the installation instructions](curiosity_driven_rl/installation.md).
 

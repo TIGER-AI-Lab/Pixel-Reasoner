@@ -277,12 +277,7 @@ Thanks [@LiqiangJing](https://github.com/LiqiangJing) for feedback!
 ## Contact
 Contact Haozhe (jasper.whz@outlook.com) for direct solution of any bugs in RL.
 
-Contact Muze (dlwlrma314516@gmail.com) for SFT.
-
-## 🙏 Acknowledgment
-
-The RL training pipeline of this repo was originally developed by [Muze](https://github.com/cjakfskvnad) in the repo crop_image branch [VLM-R1](https://github.com/cjakfskvnad/VLM-R1/tree/cropimage).  
-Later, [Haozhe Wang](https://haozheh3.github.io/) adapted the RLHF pipeline from this repo to enable more efficient training.
+Contact Muze (dlwlrma314516@gmail.com) for SFT and another version of RL: [VLM-R1](https://github.com/cjakfskvnad/VLM-R1/tree/cropimage).  
 
 
 ## Citation
